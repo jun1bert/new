@@ -17,6 +17,8 @@ class Service extends Model
         'session_count',
         'price',
         'is_active',
+        'requires_consent',
+        'consent_content',
     ];
 
     protected function casts(): array
@@ -26,6 +28,7 @@ class Service extends Model
             'duration' => 'integer',
             'session_count' => 'integer',
             'is_active' => 'boolean',
+            'requires_consent' => 'boolean',
         ];
     }
 }

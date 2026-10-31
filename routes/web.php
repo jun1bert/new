@@ -11,6 +11,8 @@ use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\ProductManagementController;
 use App\Http\Controllers\ClientClaimController;
 use App\Http\Controllers\MemberAppointmentController;
+use App\Http\Controllers\ConsentController;
+use App\Http\Controllers\BusinessReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,22 +32,29 @@ Route::get('/', function () {
 
     return view('welcome', compact('galleryImages'));
 });
-Route::post('/appointments/request', [PublicBookingController::class, 'store'])->name('appointments.request');
+Route::post('/appointments/request', [PublicBookingController::class, 'store'])->middleware('throttle:10,1')->name('appointments.request');
 
 Route::get('/dashboard', PortalController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/my-appointments/{appointment}/consent', [ConsentController::class, 'create'])->name('member.consents.create');
+    Route::post('/my-appointments/{appointment}/consent', [ConsentController::class, 'store'])->middleware('throttle:10,1')->name('member.consents.store');
+    Route::get('/consents/{consent}', [ConsentController::class, 'show'])->name('consents.show');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/claim-past-appointment', [ClientClaimController::class, 'create'])->name('claims.create');
-    Route::post('/claim-past-appointment', [ClientClaimController::class, 'store'])->name('claims.store');
+    Route::post('/claim-past-appointment', [ClientClaimController::class, 'store'])->middleware('throttle:5,1')->name('claims.store');
     Route::get('/my-appointments/{appointment}', [MemberAppointmentController::class, 'show'])->name('member.appointments.show');
     Route::get('/my-appointments/{appointment}/receipt', [MemberAppointmentController::class, 'receipt'])->name('member.appointments.receipt');
 });
 
 Route::middleware(['auth', 'verified', 'administrator'])->prefix('admin')->name('admin.')->group(function () {
+    Route::put('/scheduling/hours', [\App\Http\Controllers\SchedulingController::class, 'updateHours'])->name('scheduling.hours');
+    Route::get('/reports', BusinessReportController::class)->name('reports.index');
+    Route::get('/consent-forms', [ConsentController::class, 'index'])->name('consents.index');
+    Route::patch('/consent-forms/{service}', [ConsentController::class, 'update'])->name('consents.update');
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
     Route::patch('/users/{user}/role', [UserManagementController::class, 'updateRole'])->name('users.role.update');
@@ -65,6 +74,16 @@ Route::middleware(['auth', 'verified', 'administrator'])->prefix('admin')->name(
 });
 
 Route::middleware(['auth', 'verified', 'studio-team'])->prefix('studio')->name('studio.')->group(function () {
+    Route::get('/appointment-availability', [\App\Http\Controllers\SchedulingController::class, 'availability'])->name('appointments.availability');
+    Route::get('/calendar', [\App\Http\Controllers\SchedulingController::class, 'index'])->name('calendar');
+    Route::patch('/appointments/{appointment}/provider', [\App\Http\Controllers\SchedulingController::class, 'assign'])->name('appointments.provider');
+    Route::patch('/appointments/{appointment}/reschedule', [\App\Http\Controllers\AppointmentLifecycleController::class, 'reschedule'])->name('appointments.reschedule');
+    Route::patch('/appointments/{appointment}/cancel', [\App\Http\Controllers\AppointmentLifecycleController::class, 'cancel'])->name('appointments.cancel');
+    Route::patch('/appointments/{appointment}/no-show', [\App\Http\Controllers\AppointmentLifecycleController::class, 'noShow'])->name('appointments.no-show');
+    Route::post('/appointments/{appointment}/consent-tablet', [ConsentController::class, 'startTablet'])->name('consents.start');
+    Route::get('/consent-tablet', [ConsentController::class, 'tablet'])->name('consents.tablet');
+    Route::post('/consent-tablet/sign', [ConsentController::class, 'signTablet'])->middleware('throttle:10,1')->name('consents.sign');
+    Route::post('/consent-tablet/unlock', [ConsentController::class, 'unlockTablet'])->middleware('throttle:5,1')->name('consents.unlock');
     Route::get('/clients', [ClientRecordController::class, 'index'])->name('clients.index');
     Route::get('/clients/{client}', [ClientRecordController::class, 'show'])->name('clients.show');
     Route::get('/appointments', [AppointmentManagementController::class, 'index'])->name('appointments.index');

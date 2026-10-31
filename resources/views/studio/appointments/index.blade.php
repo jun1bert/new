@@ -1,100 +1,168 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <p class="text-xs font-bold uppercase tracking-[.2em] text-[#a48d78]">Studio operations</p>
-            <h2 class="mt-1 font-serif text-3xl text-[#4d4037]">Treatment sessions</h2>
+            <p class="text-xs font-bold uppercase tracking-[.2em] text-[#713b51]">Studio operations</p>
+            <h2 class="mt-1 font-serif text-3xl text-[#35232d]">Treatment sessions</h2>
         </div>
     </x-slot>
 
-    <div class="py-10">
-        <div x-data="{ scheduleOpen: {{ $errors->any() ? 'true' : 'false' }} }" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="sessions-page py-10">
+        <div x-data="{ scheduleOpen: {{ $errors->any() && !old('_completing_appointment_id') && !old('_assigning_appointment_id') && !old('_changing_appointment_id') && !old('_approving_appointment_id') && !old('_next_session_appointment_id') && !old('hours') ? 'true' : 'false' }} }" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="studio-calendar" style="padding:0;margin:0;max-width:none">@include('studio.partials.hours-dialog')</div>
+            @include('studio.partials.next-session-dialog')
             <section>
                 @if($services->isEmpty())
-                    <p class="mb-5 rounded-xl bg-[#f5f1eb] p-4 text-sm text-[#66584e]">You need at least one active service before scheduling.</p>
+                    <div class="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[#713b51]/20 bg-white p-5">
+                        <div><h3 class="font-serif text-2xl text-[#35232d]">Add a service to start scheduling</h3><p id="scheduling-unavailable" class="mt-2 text-sm leading-6 text-[#786570]">Walk-in and existing-client sessions need an active service with a price and session count.</p></div>
+                        @if(auth()->user()->user_type === 'administrator')
+                            <a href="{{ route('admin.services.index') }}" class="rounded-lg bg-[#713b51] px-5 py-3 text-sm font-semibold text-white">Set up services &#8594;</a>
+                        @else
+                            <p class="text-sm text-[#713b51]">Ask your administrator to add or activate a service.</p>
+                        @endif
+                    </div>
                 @else
-                    <div x-cloak x-show="scheduleOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-[#4d4037]/50 p-4 backdrop-blur-sm" @keydown.escape.window="scheduleOpen = false">
-                        <div @click.outside="scheduleOpen = false" class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
-                            <div class="flex items-start justify-between gap-4"><div><h3 class="font-serif text-2xl text-[#4d4037]">Schedule first session</h3><p class="mt-1 text-sm text-[#66584e]">Choose an existing client or add a walk-in.</p></div><button type="button" @click="scheduleOpen = false" class="rounded-lg p-2 text-[#66584e]" aria-label="Close">✕</button></div>
+                    <div x-cloak x-show="scheduleOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-[#35232d]/50 p-4 backdrop-blur-sm" @keydown.escape.window="scheduleOpen = false">
+                        <div @click.outside="scheduleOpen = false" class="schedule-dialog max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl" role="dialog" aria-modal="true" aria-label="Schedule first session">
+                            <div class="flex items-start justify-between gap-4"><div><h3 class="font-serif text-2xl text-[#35232d]">Schedule first session</h3><p class="mt-1 text-sm text-[#786570]">Choose an existing client or add a walk-in.</p></div><x-modal-close @click="scheduleOpen = false" label="Close" /></div>
                     <form method="POST" action="{{ route('studio.appointments.store') }}" class="mt-6 space-y-4">
                         @csrf
-                        <div><label for="user_id" class="text-sm font-semibold text-[#4d4037]">Existing client <span class="font-normal text-[#66584e]">(optional)</span></label><select id="user_id" name="user_id" class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]">
+                        <div><label for="user_id" class="text-sm font-semibold text-[#35232d]">Existing client <span class="font-normal text-[#786570]">(optional)</span></label><select id="user_id" name="user_id" class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]">
                             <option value="">Add a walk-in below</option>
                             @foreach($members as $member)
                                 <option value="{{ $member->id }}">{{ $member->name }}</option>
                             @endforeach
                         </select></div>
-                        <div class="rounded-xl bg-[#f5f1eb] p-4"><p class="text-sm font-semibold text-[#4d4037]">Walk-in details</p><div class="mt-3 space-y-3"><input name="walk_in_name" value="{{ old('walk_in_name') }}" placeholder="Client name" class="w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]" /><input name="walk_in_contact" value="{{ old('walk_in_contact') }}" placeholder="Contact number (optional)" class="w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]" /><input name="walk_in_email" value="{{ old('walk_in_email') }}" type="email" placeholder="Email (optional)" class="w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]" /></div></div>
-                        <div><label for="service_id" class="text-sm font-semibold text-[#4d4037]">Service</label><select id="service_id" name="service_id" required class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]">
+                        <div class="rounded-xl bg-[#faf5f7] p-4"><p class="text-sm font-semibold text-[#35232d]">Walk-in details</p><div class="mt-3 space-y-3"><input name="walk_in_name" value="{{ old('walk_in_name') }}" placeholder="Client name" class="w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]" /><input name="walk_in_contact" value="{{ old('walk_in_contact') }}" placeholder="Contact number (optional)" class="w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]" /><input name="walk_in_email" value="{{ old('walk_in_email') }}" type="email" placeholder="Email (optional)" class="w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]" /></div></div>
+                        <fieldset><legend class="text-sm font-semibold text-[#35232d]">Services</legend><p class="mt-1 text-xs text-[#786570]">Choose one or more services for this appointment.</p><div class="mt-2 max-h-60 space-y-2 overflow-y-auto rounded-xl border border-[#713b51]/20 p-3">
                             @foreach($services as $service)
-                                <option value="{{ $service->id }}">{{ $service->name }} ({{ $service->session_count }} session{{ $service->session_count === 1 ? '' : 's' }})</option>
+                                <label class="service-choice flex items-start gap-3 rounded-lg p-2"><input type="checkbox" name="service_ids[]" value="{{ $service->id }}" @checked(in_array((string) $service->id, array_map('strval', old('service_ids', old('service_id') ? [old('service_id')] : [])), true)) class="mt-1 rounded border-gray-300 text-[#713b51] focus:ring-[#713b51]" /><span class="text-sm">{{ $service->name }}<span class="block text-xs text-[#786570]">PHP {{ number_format($service->price, 2) }} · {{ $service->session_count }} session{{ $service->session_count === 1 ? '' : 's' }}</span></span></label>
                             @endforeach
-                        </select></div>
-                        <div><label for="scheduled_at" class="text-sm font-semibold text-[#4d4037]">Date and time</label><input id="scheduled_at" name="scheduled_at" type="datetime-local" required class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]" /></div>
-                        <button class="w-full rounded-lg bg-[#a48d78] px-4 py-3 text-sm font-bold text-white">Schedule session 1</button>
+                        </div></fieldset>
+                        @include('studio.partials.provider-select')
+                        <x-appointment-date-picker id="new-session" :value="old('scheduled_at', '')" />
+                        <button class="w-full rounded-lg bg-[#713b51] px-4 py-3 text-sm font-bold text-white">Schedule session 1</button>
                     </form>
                         </div>
                     </div>
                 @endif
             </section>
             <section>
-                @if(session('status'))
-                    <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('status') }}</div>
-                @endif
-                @if($errors->any())
-                    <div class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><ul class="list-disc pl-5">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul></div>
-                @endif
+
+
                 <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div><h3 class="font-serif text-3xl text-[#4d4037]">Appointments</h3><p class="mt-1 text-sm text-[#66584e]">Review requests, then manage scheduled treatment sessions.</p></div>
-                    @unless($services->isEmpty())<button type="button" @click="scheduleOpen = true" class="rounded-lg bg-[#a48d78] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#8e7763]">+ Schedule a session</button>@endunless
+                    <div><h3 class="font-serif text-3xl text-[#35232d]">Appointments</h3><p class="mt-1 text-sm text-[#786570]">Review requests, then manage scheduled treatment sessions.</p></div>
+                    <button type="button" @click="scheduleOpen = true" @disabled($services->isEmpty()) @if($services->isEmpty()) aria-describedby="scheduling-unavailable" @endif class="rounded-lg bg-[#713b51] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#52273b]">+ Add session / walk-in</button>
+                </div>
+                <div class="mt-4 flex flex-wrap items-center gap-4">
+                    <a href="{{ route('dashboard').'#calendar' }}" class="text-sm font-semibold text-[#713b51] underline">Open dashboard calendar &rarr;</a>
+                    @if(auth()->user()->user_type === 'administrator')<button type="button" class="calendar-button" x-on:click="$dispatch('open-modal', 'calendar-hours')">Working hours</button>@endif
                 </div>
                 <nav class="mt-6 flex flex-wrap gap-2" aria-label="Appointment filters">
-                    @php($filters = ['pending' => 'Pending', 'scheduled' => 'Scheduled', 'completed' => 'Completed', 'declined' => 'Declined'])
-                    <a href="{{ route('studio.appointments.index') }}" class="rounded-full px-4 py-2 text-sm font-bold {{ $status === null ? 'bg-[#4d4037] text-white' : 'bg-white text-[#66584e] ring-1 ring-[#a48d78]/25 hover:bg-[#f5f1eb]' }}">All <span class="ml-1 opacity-75">{{ $statusCounts->sum() }}</span></a>
+                    @php($filters = ['pending' => 'Pending', 'scheduled' => 'Scheduled', 'completed' => 'Completed', 'declined' => 'Declined', 'cancelled' => 'Cancelled', 'no_show' => 'No-show'])
+                    <a href="{{ route('studio.appointments.index') }}" class="rounded-full px-4 py-2 text-sm font-bold {{ $status === null ? 'bg-[#35232d] text-white' : 'bg-white text-[#786570] ring-1 ring-[#713b51]/25 hover:bg-[#faf5f7]' }}">All <span class="ml-1 opacity-75">{{ $statusCounts->sum() }}</span></a>
                     @foreach($filters as $key => $label)
-                        <a href="{{ route('studio.appointments.index', ['status' => $key]) }}" class="rounded-full px-4 py-2 text-sm font-bold {{ $status === $key ? 'bg-[#4d4037] text-white' : 'bg-white text-[#66584e] ring-1 ring-[#a48d78]/25 hover:bg-[#f5f1eb]' }}">{{ $label }} <span class="ml-1 opacity-75">{{ $statusCounts[$key] ?? 0 }}</span></a>
+                        <a href="{{ route('studio.appointments.index', ['status' => $key]) }}" class="rounded-full px-4 py-2 text-sm font-bold {{ $status === $key ? 'bg-[#35232d] text-white' : 'bg-white text-[#786570] ring-1 ring-[#713b51]/25 hover:bg-[#faf5f7]' }}">{{ $label }} <span class="ml-1 opacity-75">{{ $statusCounts[$key] ?? 0 }}</span></a>
                     @endforeach
                 </nav>
-                <form method="GET" class="mt-4"><input type="hidden" name="status" value="{{ $status }}" /><input name="search" value="{{ $search }}" placeholder="Search client or service" class="w-full max-w-md rounded-lg border-gray-300" /></form>
+                <form method="GET" class="mt-4" role="search"><input type="hidden" name="status" value="{{ $status }}" /><x-search-field :value="$search" placeholder="Search client or service" :clear-url="route('studio.appointments.index', array_filter(['status' => $status]))" /></form>
                 <div class="mt-5 space-y-4">
                     @forelse($appointments as $appointment)
-                        <article x-data="{ paymentOpen: false, products: [] }" class="rounded-2xl border border-[#a48d78]/20 bg-white p-5 shadow-sm">
-                            <div class="flex flex-wrap items-start justify-between gap-3"><div><h4 class="font-serif text-xl text-[#4d4037]">{{ $appointment->client->name }} · {{ $appointment->service->name }}</h4><p class="mt-1 text-sm text-[#66584e]">Session {{ $appointment->session_number }} of {{ $appointment->service->session_count }} · {{ $appointment->scheduled_at->format('M j, Y · g:i A') }}</p>@if($appointment->contact_number)<p class="mt-2 text-xs text-[#66584e]">Contact: {{ $appointment->contact_number }}</p>@endif @if($appointment->status === 'pending')<p class="mt-1 text-xs text-[#66584e]">Requested {{ $appointment->created_at->format('M j, Y · g:i A') }}</p>@endif @if($appointment->notes)<p class="mt-2 rounded-lg bg-[#f5f1eb] px-3 py-2 text-xs text-[#66584e]">Request: {{ $appointment->notes }}</p>@endif</div><span class="rounded-full px-3 py-1 text-xs font-bold {{ $appointment->status === 'completed' ? 'bg-emerald-50 text-emerald-700' : ($appointment->status === 'pending' ? 'bg-amber-50 text-amber-700' : ($appointment->status === 'declined' ? 'bg-red-50 text-red-700' : 'bg-[#f5f1eb] text-[#66584e]')) }}">{{ ucfirst($appointment->status) }}</span></div>
+                        @php($retryingPayment = $errors->any() && (string) old('_completing_appointment_id') === (string) $appointment->id)
+                        <article id="appointment-{{ $appointment->id }}" x-data="{ paymentOpen: @js($retryingPayment), products: @js($retryingPayment ? array_values(old('products', [])) : []), supplies: @js($retryingPayment ? array_values(old('supplies', [])) : []), discount: @js($retryingPayment ? old('discount_amount', 0) : 0), serviceCents: @js($appointment->service_total_cents), priceCents: @js($retailProducts->mapWithKeys(fn ($product) => [$product->id => (int) round((float) $product->selling_price * 100)])), subtotalCents() { return this.serviceCents + this.products.reduce((sum, item) => sum + (this.priceCents[item.id] || 0) * Math.max(0, Math.floor(Number(item.quantity) || 0)), 0) }, total() { return (Math.max(0, this.subtotalCents() - Math.round((Number(this.discount) || 0) * 100)) / 100).toFixed(2) } }" class="rounded-2xl border border-[#713b51]/20 bg-white p-5 shadow-sm">
+                            <div class="flex flex-wrap items-start justify-between gap-3"><div><h4 class="font-serif text-xl text-[#35232d]">{{ $appointment->client->name }} · {{ $appointment->service_names }}</h4><p class="mt-1 text-sm text-[#786570]">{{ $appointment->session_summary }} · {{ $appointment->scheduled_at->copy()->timezone('Asia/Manila')->format('M j, Y · g:i A') }}</p>@if($appointment->booking_email)<p class="mt-2 text-xs text-[#786570]">Booking email: {{ $appointment->booking_email }}</p>@endif @if($appointment->contact_number)<p class="mt-2 text-xs text-[#786570]">Contact: {{ $appointment->contact_number }}</p>@endif @if($appointment->status === 'pending')<p class="mt-1 text-xs text-[#786570]">Requested {{ $appointment->created_at->format('M j, Y · g:i A') }}</p>@endif @if($appointment->notes)<p class="mt-2 rounded-lg bg-[#faf5f7] px-3 py-2 text-xs text-[#786570]">Request: {{ $appointment->notes }}</p>@endif</div><span class="rounded-full px-3 py-1 text-xs font-bold {{ $appointment->status === 'completed' ? 'bg-emerald-50 text-emerald-700' : ($appointment->status === 'pending' ? 'bg-amber-50 text-amber-700' : ($appointment->status === 'declined' ? 'bg-red-50 text-red-700' : 'bg-[#faf5f7] text-[#786570]')) }}">{{ ucfirst(str_replace('_', ' ', $appointment->status)) }}</span></div>
+                            <p class="mt-3 text-sm text-[#786570]">Provider: {{ $appointment->provider?->name ?? 'Unassigned' }}@if($appointment->duration_minutes) &middot; {{ $appointment->duration_minutes }} minutes @endif</p>
+                            @if($appointment->status === 'scheduled')
+                                @php($retryAssignment = (string) old('_assigning_appointment_id') === (string) $appointment->id)
+                                <details class="mt-3 rounded-lg border border-[#713b51]/20 p-3" @if($retryAssignment) open @endif>
+                                    <summary class="cursor-pointer text-sm font-semibold text-[#713b51]">{{ $appointment->provider_id ? 'Change treatment provider' : 'Assign treatment provider' }}</summary>
+                                    <form method="POST" action="{{ route('studio.appointments.provider', $appointment) }}" class="mt-3 flex flex-wrap items-end gap-3">@csrf @method('PATCH')
+                                        <input type="hidden" name="_assigning_appointment_id" value="{{ $appointment->id }}">
+                                        <label for="session-provider-{{ $appointment->id }}" class="text-sm font-semibold">Treatment provider<select id="session-provider-{{ $appointment->id }}" name="provider_id" required class="mt-1 block rounded-lg border-gray-300 text-sm"><option value="">Choose provider</option>@foreach($providers as $provider)<option value="{{ $provider->id }}" @selected((string) ($retryAssignment ? old('provider_id') : $appointment->provider_id) === (string) $provider->id)>{{ $provider->name }}</option>@endforeach</select></label>
+                                        <button class="rounded-lg bg-[#713b51] px-4 py-2.5 text-sm font-semibold text-white">Save provider</button>
+                                    </form>
+                                </details>
+                            @endif
+                            @include('studio.partials.session-lifecycle')
+                            @if($appointment->consentForm)
+                                <p class="mt-3 text-sm text-[#63505b]">Consent signed <a class="consent-link" href="{{ route('consents.show', $appointment->consentForm) }}">View record &rarr;</a></p>
+                            @elseif($appointment->consent_service)
+                                <p class="mt-3 rounded-lg bg-[#faf3f6] p-3 text-sm text-[#715263]">{{ in_array($appointment->status, ['pending', 'scheduled'], true) ? 'Consent awaiting signature. The client can read and sign from their appointment details.' : 'No digital consent is linked to this session.' }}</p>
+                                @if(in_array($appointment->status, ['pending', 'scheduled'], true) && filled($appointment->consent_service?->consent_content))
+                                    <form method="POST" action="{{ route('studio.consents.start', $appointment) }}" class="mt-3">@csrf<button class="consent-secondary">Sign on this tablet</button><p class="mt-2 text-xs text-[#63505b]">Open for {{ $appointment->client->name }}. Staff password required to return.</p></form>
+                                @endif
+                            @endif
                             @if($appointment->status === 'pending')
-                                <div class="mt-4 flex gap-2">
-                                    <form method="POST" action="{{ route('studio.appointments.accept', $appointment) }}">@csrf @method('PATCH')<button class="rounded-lg bg-[#4d4037] px-4 py-2.5 text-sm font-bold text-white">Accept request</button></form>
-                                    <form method="POST" action="{{ route('studio.appointments.decline', $appointment) }}" onsubmit="return confirm('Decline this appointment request?');">@csrf @method('PATCH')<button class="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700">Decline</button></form>
+                                <div class="mt-4 max-w-md">
+                                    <div class="mt-3 flex flex-wrap items-center gap-2">
+                                        <button type="button" x-on:click="$dispatch('open-modal', 'approve-request-{{ $appointment->id }}')" class="rounded-lg bg-[#35232d] px-4 py-2.5 text-sm font-bold text-white">Accept request</button>
+                                        <form method="POST" action="{{ route('studio.appointments.decline', $appointment) }}" onsubmit="return confirm('Decline this appointment request?');">@csrf @method('PATCH')<button class="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700">Decline</button></form>
+                                    </div>
                                 </div>
+                                @include('studio.partials.approve-request-dialog')
                             @elseif($appointment->status === 'scheduled')
-                                <button type="button" @click="paymentOpen = true" class="mt-4 rounded-lg bg-[#4d4037] px-4 py-2.5 text-sm font-bold text-white">Mark session complete</button>
-                                <div x-cloak x-show="paymentOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-[#4d4037]/50 p-4 backdrop-blur-sm" @keydown.escape.window="paymentOpen = false">
-                                    <div @click.outside="paymentOpen = false" class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-                                        <div class="flex items-start justify-between gap-4"><div><h3 class="font-serif text-2xl text-[#4d4037]">Record payment</h3><p class="mt-1 text-sm text-[#66584e]">{{ $appointment->client->name }} · {{ $appointment->service->name }}</p></div><button type="button" @click="paymentOpen = false" class="p-2 text-[#66584e]" aria-label="Close">✕</button></div>
+                                <button type="button" x-on:click="$dispatch('open-modal', 'confirm-completion-{{ $appointment->id }}')" class="mt-4 rounded-lg bg-[#35232d] px-4 py-2.5 text-sm font-bold text-white">Mark session complete</button>
+                                <div class="studio-calendar" style="padding:0;margin:0;max-width:none">
+                                    <x-calendar-dialog name="confirm-completion-{{ $appointment->id }}" maxWidth="md">
+                                        <section class="p-6" role="dialog" aria-modal="true" aria-labelledby="confirm-completion-title-{{ $appointment->id }}">
+                                            <div class="flex items-start justify-between gap-4"><h3 id="confirm-completion-title-{{ $appointment->id }}" class="font-serif text-2xl">Complete this session?</h3><x-modal-close x-on:click="$dispatch('close-modal', 'confirm-completion-{{ $appointment->id }}')" label="Close completion confirmation" /></div>
+                                            <p class="mt-4 text-sm font-semibold">{{ $appointment->client->name }} &middot; {{ $appointment->service_names }}</p>
+                                            <p class="mt-3 text-sm text-[#786570]">Are you sure this treatment session has been performed? Continue to review payment, products, and supplies before completing it.</p>
+                                            <div class="mt-5 flex flex-wrap gap-2"><button type="button" class="calendar-button" x-on:click="$dispatch('close-modal', 'confirm-completion-{{ $appointment->id }}')">Go back</button><button type="button" class="calendar-button calendar-button-primary" x-on:click="$dispatch('close-modal', 'confirm-completion-{{ $appointment->id }}'); $nextTick(() => { paymentOpen = true })">Yes, continue to payment</button></div>
+                                        </section>
+                                    </x-calendar-dialog>
+                                </div>
+                                <div x-cloak x-show="paymentOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-[#35232d]/50 p-4 backdrop-blur-sm" @keydown.escape.window="paymentOpen = false">
+                                    <div @click.outside="paymentOpen = false" class="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+                                        <div class="flex items-start justify-between gap-4"><div><h3 class="font-serif text-2xl text-[#35232d]">Record payment</h3><p class="mt-1 text-sm text-[#786570]">{{ $appointment->client->name }} · {{ $appointment->service_names }}</p></div><x-modal-close @click="paymentOpen = false" label="Close" /></div>
                                         <form method="POST" action="{{ route('studio.appointments.complete', $appointment) }}" class="mt-6 space-y-4">@csrf @method('PATCH')
-                                            <div><label class="text-sm font-semibold text-[#4d4037]">Amount (PHP)</label><input name="amount" type="number" min="0" step="0.01" value="{{ number_format((float) $appointment->service->price, 2, '.', '') }}" required class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]" /></div>
-                                            <div><label class="text-sm font-semibold text-[#4d4037]">Payment method</label><select name="method" required class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]"><option value="cash">Cash</option><option value="gcash">GCash</option><option value="card">Card</option><option value="bank_transfer">Bank transfer</option><option value="other">Other</option></select></div>
-                                            <div><label class="text-sm font-semibold text-[#4d4037]">Reference <span class="font-normal text-[#66584e]">(optional)</span></label><input name="reference" maxlength="120" placeholder="Receipt or transaction number" class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]" /></div>
-                                            <button x-show="products.length === 0" type="button" @click="products.push({ id: '', quantity: 1 })" class="w-full rounded-lg border border-[#a48d78]/40 px-4 py-2.5 text-sm font-bold text-[#4d4037]">+ Add retail product</button><div x-show="products.length > 0" class="rounded-xl bg-[#f5f1eb] p-4"><div class="flex items-center justify-between gap-3"><p class="text-sm font-semibold text-[#4d4037]">Retail products</p><button type="button" @click="products.push({ id: '', quantity: 1 })" class="text-xs font-bold text-[#a48d78]">+ Add product</button></div><template x-for="(item, index) in products" :key="index"><div class="mt-2 grid grid-cols-[1fr_70px_28px] gap-2"><select :name="`products[${index}][id]`" x-model="item.id" class="rounded-lg border-gray-300"><option value="">Select product</option>@foreach($retailProducts as $product)<option value="{{ $product->id }}">{{ $product->name }} — PHP {{ number_format((float)$product->selling_price,2) }}</option>@endforeach</select><input :name="`products[${index}][quantity]`" x-model="item.quantity" type="number" min="1" class="rounded-lg border-gray-300" /><button type="button" @click="products.splice(index, 1)" class="text-red-600" aria-label="Remove product">×</button></div></template><p class="mt-2 text-xs text-[#66584e]">Include selected product totals in the payment amount.</p></div>
-                                            <button class="w-full rounded-lg bg-[#4d4037] px-4 py-3 text-sm font-bold text-white">Record payment & complete</button>
+                                            <div><label for="payment-total-{{ $appointment->id }}" class="text-sm font-semibold text-[#35232d]">Total to collect (PHP)</label><input id="payment-total-{{ $appointment->id }}" name="amount" type="number" min="0" step="0.01" :value="total()" value="{{ number_format(($appointment->service_total_cents / 100), 2, '.', '') }}" readonly required class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]" /><p class="mt-2 text-xs text-[#786570]" aria-live="polite">Service + retail products: PHP <span x-text="(subtotalCents() / 100).toFixed(2)">{{ number_format(($appointment->service_total_cents / 100), 2, '.', '') }}</span>. Treatment supplies are included in the service.</p></div>
+                                            <div class="rounded-xl bg-[#faf5f7] p-4">
+                                                <label for="discount-{{ $appointment->id }}" class="text-sm font-semibold text-[#35232d]">Discount (PHP)</label>
+                                                <input id="discount-{{ $appointment->id }}" name="discount_amount" x-model="discount" type="number" min="0" :max="(subtotalCents() / 100).toFixed(2)" step="0.01" class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]" />
+                                                <p class="mt-1 text-xs text-[#786570]">Optional. Deducted from the service and retail subtotal.</p>
+                                                <label for="discount-reason-{{ $appointment->id }}" class="mt-3 block text-sm font-semibold text-[#35232d]">Discount reason (optional)</label>
+                                                <input id="discount-reason-{{ $appointment->id }}" name="discount_reason" value="{{ $retryingPayment ? old('discount_reason') : '' }}" maxlength="255" placeholder="e.g. Loyalty reward or promotion" class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]" />
+                                            </div>
+                                            <div><label class="text-sm font-semibold text-[#35232d]">Payment method</label><select name="method" required class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]"><option value="cash" @selected($retryingPayment && old('method') === 'cash')>Cash</option><option value="gcash" @selected($retryingPayment && old('method') === 'gcash')>GCash</option><option value="card" @selected($retryingPayment && old('method') === 'card')>Card</option><option value="bank_transfer" @selected($retryingPayment && old('method') === 'bank_transfer')>Bank transfer</option><option value="other" @selected($retryingPayment && old('method') === 'other')>Other</option></select></div>
+                                            <div><label class="text-sm font-semibold text-[#35232d]">Reference <span class="font-normal text-[#786570]">(optional)</span></label><input name="reference" value="{{ $retryingPayment ? old('reference') : '' }}" maxlength="120" placeholder="Receipt or transaction number" class="mt-1 w-full rounded-lg border-gray-300 focus:border-[#713b51] focus:ring-[#713b51]" /></div>
+                                            <button x-show="products.length === 0" type="button" @click="products.push({ id: '', quantity: 1 })" class="w-full rounded-lg border border-[#713b51]/40 px-4 py-2.5 text-sm font-bold text-[#35232d]">+ Add retail product</button><div x-show="products.length > 0" class="rounded-xl bg-[#faf5f7] p-4"><div class="flex items-center justify-between gap-3"><p class="text-sm font-semibold text-[#35232d]">Retail products</p><button type="button" @click="products.push({ id: '', quantity: 1 })" class="text-xs font-bold text-[#713b51]">+ Add product</button></div><template x-for="(item, index) in products" :key="index"><div class="mt-2 grid grid-cols-[1fr_70px_28px] gap-2"><select :name="`products[${index}][id]`" x-model="item.id" class="rounded-lg border-gray-300"><option value="">Select product</option>@foreach($retailProducts as $product)<option value="{{ $product->id }}">{{ $product->name }} — PHP {{ number_format((float)$product->selling_price,2) }}</option>@endforeach</select><input :name="`products[${index}][quantity]`" x-model="item.quantity" type="number" min="1" class="rounded-lg border-gray-300" /><button type="button" @click="products.splice(index, 1)" class="text-red-600" aria-label="Remove product">×</button></div></template><p class="mt-2 text-xs text-[#786570]">Retail products are automatically added to the total.</p></div>
+                                            <section class="rounded-xl border border-[#713b51]/20 p-4">
+                                                <div class="flex flex-wrap items-center justify-between gap-3"><h4 class="text-sm font-semibold text-[#35232d]">Items used in treatment</h4><button type="button" @click="supplies.push({ id: '', quantity: 1 })" @disabled($treatmentSupplies->isEmpty()) class="text-xs font-semibold text-[#713b51]">+ Add supply</button></div>
+                                                <p class="mt-2 text-xs leading-5 text-[#786570]">Deducted from stock only. Not charged separately or shown on the client receipt. Use the same units as your inventory.</p>
+                                                @if($treatmentSupplies->isEmpty())<p class="mt-3 text-xs text-[#786570]">No active treatment supplies in stock. An administrator can add them in Inventory.</p>@endif
+                                                <template x-for="(item, index) in supplies" :key="index">
+                                                    <div class="mt-3 grid grid-cols-[minmax(0,1fr)_80px_32px] gap-2">
+                                                        <label class="min-w-0"><span class="sr-only">Treatment supply</span><select :name="`supplies[${index}][id]`" x-model="item.id" required class="w-full rounded-lg border-gray-300"><option value="">Select supply</option>@foreach($treatmentSupplies as $supply)<option value="{{ $supply->id }}">{{ $supply->name }} ({{ $supply->stock_quantity }} available)</option>@endforeach</select></label>
+                                                        <label><span class="sr-only">Quantity used</span><input :name="`supplies[${index}][quantity]`" x-model="item.quantity" type="number" min="0.01" step="0.01" required class="w-full rounded-lg border-gray-300" /></label>
+                                                        <button type="button" @click="supplies.splice(index, 1)" class="text-red-600" aria-label="Remove supply">&#215;</button>
+                                                    </div>
+                                                </template>
+                                            </section>
+                                            @if($retryingPayment)<div role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-700"><ul class="list-disc pl-4">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+                                            <button class="w-full rounded-lg bg-[#35232d] px-4 py-3 text-sm font-bold text-white">Confirm payment &amp; complete session</button>
                                         </form>
                                     </div>
                                 </div>
-                            @elseif($appointment->session_number < $appointment->service->session_count)
+                            @elseif($appointment->can_schedule_next)
                                 <form method="POST" action="{{ route('studio.appointments.next-session', $appointment) }}" class="mt-4 flex flex-col gap-2 sm:flex-row">
+                                    @include('studio.partials.provider-select', ['defaultProvider' => $appointment->provider?->user_type === 'staff' && $appointment->provider->is_active ? $appointment->provider->name : (auth()->user()->user_type === 'staff' ? 'Me ('.auth()->user()->name.')' : 'Choose a staff member')])
                                     @csrf
-                                    <input name="scheduled_at" type="datetime-local" required class="rounded-lg border-gray-300 focus:border-[#a48d78] focus:ring-[#a48d78]" />
-                                    <button class="rounded-lg border border-[#a48d78]/40 px-4 py-2.5 text-sm font-bold text-[#4d4037]">Schedule session {{ $appointment->session_number + 1 }}</button>
+                                    <x-appointment-date-picker :id="'follow-up-'.$appointment->id" :value="(string) old('scheduled_at', '')" :appointment-id="$appointment->id" mode="next" :default-provider="$appointment->provider?->user_type === 'staff' && $appointment->provider->is_active ? $appointment->provider_id : null" />
+                                    <button class="rounded-lg border border-[#713b51]/40 px-4 py-2.5 text-sm font-bold text-[#35232d]">Schedule session {{ $appointment->session_number + 1 }}</button>
                                 </form>
+                            @elseif($appointment->status === 'completed' && $appointment->next_session)
+                                @php($recordedNextSession = $appointment->next_session)
+                                <p class="mt-4 text-sm text-[#786570]">Session {{ $recordedNextSession->session_number }} is already {{ str_replace('_', ' ', $recordedNextSession->status) }}. <a href="{{ route('studio.appointments.index', ['appointment_id' => $recordedNextSession->id]) }}#appointment-{{ $recordedNextSession->id }}" class="font-semibold text-[#713b51] underline">View session {{ $recordedNextSession->session_number }}</a></p>
                             @endif
                             @if($appointment->status === 'completed' && $appointment->payment)
-                                <a href="{{ route('studio.payments.receipt', $appointment->payment) }}" target="_blank" class="mt-4 inline-block rounded-lg border border-[#a48d78]/40 px-4 py-2.5 text-sm font-bold text-[#4d4037]">View receipt</a>
+                                <a href="{{ route('studio.payments.receipt', $appointment->payment) }}" target="_blank" class="mt-4 inline-block rounded-lg border border-[#713b51]/40 px-4 py-2.5 text-sm font-bold text-[#35232d]">View receipt</a>
+                            @endif
+                            @if($appointment->supplyUsages->isNotEmpty())
+                                <div class="mt-4 border-t border-[#713b51]/15 pt-4"><h4 class="text-xs font-semibold uppercase tracking-wide text-[#713b51]">Treatment supplies used</h4><ul class="mt-2 space-y-1 text-sm text-[#786570]">@foreach($appointment->supplyUsages as $usage)<li>{{ $usage->product?->name ?? 'Supply' }} &times; {{ number_format(abs((float) $usage->quantity), 2) }}</li>@endforeach</ul></div>
                             @endif
                         </article>
                     @empty
-                        <div class="rounded-2xl border border-dashed border-[#a48d78]/30 bg-white/60 px-6 py-12 text-center text-sm text-[#66584e]">No treatment sessions have been scheduled.</div>
+                        <div class="rounded-2xl border border-dashed border-[#713b51]/30 bg-white/60 px-6 py-12 text-center text-sm text-[#786570]">No treatment sessions have been scheduled.</div>
                     @endforelse
                 </div>
                 @if($appointments->hasPages())

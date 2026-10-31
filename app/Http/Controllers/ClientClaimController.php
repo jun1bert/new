@@ -44,43 +44,35 @@ class ClientClaimController extends Controller
 
     public function approve(Request $request, ClientClaimRequest $claim): RedirectResponse
     {
-        abort_unless($claim->status === 'pending', 422);
         $data = $request->validate(['appointment_id' => ['required', 'integer', 'exists:appointments,id'], 'review_note' => ['nullable', 'string', 'max:1000']]);
-        $appointment = Appointment::with('client')->findOrFail($data['appointment_id']);
-
-        abort_unless(
-            strcasecmp(trim($appointment->client->name), trim($claim->name_used)) === 0
-            && $appointment->scheduled_at->isSameDay($claim->appointment_date)
-            && strcasecmp(trim($appointment->service->name), trim($claim->service_name)) === 0,
-            422
-        );
-
-        if ($appointment->status !== 'completed') {
-            $claim->update(['status' => 'invalid', 'reviewed_by' => $request->user()->id, 'reviewed_at' => now(), 'review_note' => 'The selected booking was not completed and cannot be claimed as service history.']);
-            return back()->with('success', 'Claim marked invalid because the selected booking was not completed.');
-        }
-
-        DB::transaction(function () use ($claim, $appointment, $request, $data) {
-            $formerClientId = $appointment->user_id;
-            Appointment::where('user_id', $formerClientId)->update(['user_id' => $claim->claimant_id]);
-            ConsentForm::where('user_id', $formerClientId)->update(['user_id' => $claim->claimant_id]);
-            $claim->update(['status' => 'approved', 'reviewed_by' => $request->user()->id, 'reviewed_at' => now(), 'review_note' => $data['review_note'] ?? null]);
-
-            // Guest profiles are internal placeholders. Once all of their history
-            // has been claimed, remove the empty placeholder from Client Records.
-            $formerClient = $appointment->client;
-            if (
-                $formerClient
+        DB::transaction(function () use ($claim, $request, $data) {
+            $claim = ClientClaimRequest::whereKey($claim->id)->lockForUpdate()->firstOrFail();
+            abort_unless($claim->status === 'pending', 422);
+            $appointment = Appointment::whereKey($data['appointment_id'])->lockForUpdate()->firstOrFail();
+            $formerClient = $appointment->client()->lockForUpdate()->firstOrFail();
+            abort_unless($formerClient->user_type === 'member'
                 && str_starts_with($formerClient->email, 'guest-')
-                && str_ends_with($formerClient->email, '@booking.local')
-                && ! Appointment::where('user_id', $formerClientId)->exists()
-                && ! ConsentForm::where('user_id', $formerClientId)->exists()
+                && str_ends_with($formerClient->email, '@booking.local'), 422, 'Only unclaimed guest bookings can be linked.');
+            abort_unless(
+                $appointment->status === 'completed'
+                && strcasecmp(trim($formerClient->name), trim($claim->name_used)) === 0
+                && $appointment->scheduled_at->copy()->timezone('Asia/Manila')->toDateString() === $claim->appointment_date->toDateString()
+                && $appointment->booked_services->contains(fn ($service) => strcasecmp(trim($service->name), trim($claim->service_name)) === 0), 422);
+            // Link only the verified treatment course, never all of another profile's history.
+            $courseIds = Appointment::where('user_id', $formerClient->id)
+                ->where('treatment_course_id', $appointment->treatment_course_id)->lockForUpdate()->pluck('id');
+            Appointment::whereIn('id', $courseIds)->update(['user_id' => $claim->claimant_id]);
+            ConsentForm::where('user_id', $formerClient->id)->whereIn('appointment_id', $courseIds)->update(['user_id' => $claim->claimant_id]);
+            $claim->update(['status' => 'approved', 'reviewed_by' => $request->user()->id, 'reviewed_at' => now(), 'review_note' => $data['review_note'] ?? null]);
+            if (
+                ! Appointment::where('user_id', $formerClient->id)->exists()
+                && ! ConsentForm::where('user_id', $formerClient->id)->exists()
             ) {
                 $formerClient->delete();
             }
         });
 
-        return back()->with('success', 'The selected client record and its history are now linked to '.$claim->claimant->name.'.');
+        return back()->with('success', 'The verified guest treatment course is now linked to '.$claim->claimant->name.'.');
     }
 
     public function decline(Request $request, ClientClaimRequest $claim): RedirectResponse

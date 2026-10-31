@@ -1,7 +1,8 @@
 <x-guest-layout>
-    <div class="mb-6 text-center">
-        <h1 class="font-serif text-3xl text-[#4d4037]">Welcome back</h1>
-        <p class="mt-2 text-sm text-gray-600">Sign in to access your Lunelle account.</p>
+    <div class="auth-heading mb-6">
+        <p class="auth-eyebrow">YOUR LUNELLE ACCOUNT</p>
+        <h1>Lovely to see<br><em>you again.</em></h1>
+        <p class="auth-intro">Sign in to view your appointments and plan your next visit.</p>
     </div>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -17,13 +18,16 @@
         </div>
 
         <!-- Password -->
-        <div class="mt-4">
+        <div class="mt-4" x-data="{ visible: false }">
             <x-input-label for="password" :value="__('Password')" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
+            <div class="auth-password">
+            <x-text-input id="password" class="block mt-1 w-full" x-bind:type="visible ? 'text' : 'password'"
                             type="password"
                             name="password"
                             required autocomplete="current-password" />
+            <button type="button" class="auth-show" x-on:click="visible = !visible" x-bind:aria-pressed="visible" aria-controls="password" x-text="visible ? 'Hide' : 'Show'">Show</button>
+            </div>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
@@ -37,18 +41,16 @@
         </div>
 
         <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-            <a class="text-sm font-semibold text-[#8d6c5a] hover:text-[#4d4037]" href="{{ route('register') }}">
-                Create an account
-            </a>
             @if (Route::has('password.request'))
                 <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button class="auth-submit">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
     </form>
+    <p class="auth-switch">New to Lunelle? <a href="{{ route('register') }}">Create an account &#8594;</a></p>
 </x-guest-layout>

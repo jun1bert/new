@@ -15,7 +15,7 @@ class UserManagementController extends Controller
     {
         $search = $request->string('search')->trim()->toString();
         return view('admin.users.index', [
-            'users' => User::query()->when($search, fn($q) => $q->where(fn($q) => $q->where('name','like',"%{$search}%")->orWhere('email','like',"%{$search}%")))->latest()->paginate(12)->withQueryString(),
+            'users' => User::query()->where('user_type', '!=', 'administrator')->when($search, fn($q) => $q->where(fn($q) => $q->where('name','like',"%{$search}%")->orWhere('email','like',"%{$search}%")))->latest()->paginate(12)->withQueryString(),
             'search' => $search,
             'roles' => ['member', 'staff', 'administrator'],
         ]);
@@ -57,6 +57,7 @@ class UserManagementController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        $request->merge(['_editing_user_id' => (string) $user->id]);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user)],

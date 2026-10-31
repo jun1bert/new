@@ -14,6 +14,20 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $attributes = ['is_active' => true, 'user_type' => 'member'];
+
+    protected static function booted(): void
+    {
+        static::updated(function (User $user) {
+            if ($user->wasChanged(['user_type', 'is_active']) && ($user->user_type !== 'staff' || !$user->is_active)) {
+                Appointment::where('provider_id', $user->id)->whereIn('status', ['pending', 'scheduled'])->each(function (Appointment $appointment) {
+                    $appointment->historyReason = 'Provider is no longer an active staff member.';
+                    $appointment->update(['provider_id' => null]);
+                });
+            }
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *

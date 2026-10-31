@@ -3,20 +3,76 @@
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Receipt {{ $payment->receipt_number }}</title>
-    <style>body{margin:0;background:#f5f1eb;color:#4d4037;font-family:Arial,sans-serif}.receipt{max-width:640px;margin:40px auto;background:#fff;padding:42px;border-radius:16px;box-shadow:0 8px 30px #4d40371a}.brand{font-family:Georgia,serif;font-size:28px;letter-spacing:.14em}.muted{color:#66584e}.row{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid #eee8de}.total{font-size:22px;font-weight:bold;border:0}.badge{display:inline-block;background:#eaf8f0;color:#187146;border-radius:999px;padding:6px 10px;font-weight:bold;font-size:12px}@media print{body{background:#fff}.receipt{box-shadow:none;margin:0;max-width:none}.no-print{display:none}}</style>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 24px 12px; background: #f3edf0; color: #171717; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.5; }
+        .receipt { width: 80mm; max-width: 100%; margin: 0 auto; padding: 5mm 4mm; background: white; box-shadow: 0 4px 24px #35232d12; }
+        .receipt-header { text-align: center; }
+        .brand { font-family: Georgia, serif; font-size: 24px; letter-spacing: .16em; line-height: 1.2; }
+        .brand-subtitle { font-size: 9px; letter-spacing: .22em; margin: 3px 0 12px; }
+        .receipt-number { margin: 8px 0 0; overflow-wrap: anywhere; }
+        .muted { color: #444; }
+        .badge { display: inline-block; border: 1px solid #444; padding: 1px 8px; font-size: 10px; font-weight: bold; }
+        hr { border: 0; border-top: 1px dashed #888; margin: 14px 0; }
+        .client-label { margin: 0; font-size: 10px; }
+        h1 { font-size: 14px; line-height: 1.4; margin: 3px 0 12px; overflow-wrap: anywhere; }
+        .row { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px dashed #ddd; break-inside: avoid; }
+        .row > :first-child { min-width: 0; overflow-wrap: anywhere; }
+        .row > :last-child { flex-shrink: 0; max-width: 55%; text-align: right; overflow-wrap: anywhere; }
+        .total { font-size: 14px; font-weight: bold; border-top: 1px dashed #444; border-bottom: 1px dashed #444; margin-top: 9px; padding: 10px 0; }
+        .supplies { margin-top: 16px; padding-top: 12px; border-top: 1px dashed #888; }
+        .supplies h2 { font-size: 11px; margin: 0 0 4px; }
+        .supplies p, .review-note { font-size: 10px; line-height: 1.5; margin: 0 0 8px; }
+        .receipt-footer { text-align: center; font-size: 10px; margin: 16px 0 0; }
+        .receipt-footer p { margin: 5px 0; overflow-wrap: anywhere; }
+        .print-controls { width: 80mm; max-width: 100%; margin: 18px auto 0; text-align: center; font-family: Arial, sans-serif; }
+        .print-controls button { width: 100%; border: 0; border-radius: 6px; background: #713b51; color: white; padding: 12px; font-weight: bold; cursor: pointer; }
+        .print-controls p { font-size: 11px; color: #786570; line-height: 1.6; }
+        @page { margin: 0; }
+        @media print {
+            html, body { width: 80mm; margin: 0; padding: 0; background: white; color: black; }
+            .receipt { width: 80mm; max-width: none; margin: 0; padding: 4mm; box-shadow: none; }
+            .muted { color: black; }
+            .no-print { display: none; }
+        }
+    </style>
 </head>
 <body>
     <main class="receipt">
-        <div style="display:flex;justify-content:space-between;gap:20px"><div><div class="brand">LUNELLE</div><p class="muted" style="margin:6px 0 0">AESTHETICS</p></div><div style="text-align:right"><span class="badge">PAID</span><p class="muted">Receipt {{ $payment->receipt_number ?? 'Pending number' }}<br>{{ $payment->paid_at->format('M j, Y · g:i A') }}</p></div></div>
-        <hr style="border:0;border-top:1px solid #eee8de;margin:28px 0">
-        <p class="muted">Received from</p><h1 style="font-family:Georgia,serif;margin-top:4px">{{ $payment->appointment->client->name }}</h1>
+        <header class="receipt-header">
+            <div class="brand">LUNELLE</div><p class="brand-subtitle">AESTHETICS</p>
+            <span class="badge">PAID</span>
+            <p class="receipt-number">Receipt {{ $payment->receipt_number ?? 'Pending number' }}<br>{{ $payment->paid_at->copy()->timezone('Asia/Manila')->format('M j, Y') }} &middot; {{ $payment->paid_at->copy()->timezone('Asia/Manila')->format('g:i A') }}</p>
+        </header>
+        <hr>
+        <p class="muted client-label">Received from</p><h1>{{ $payment->appointment->client->name }}</h1>
         @foreach($payment->items as $item)<div class="row"><span>{{ $item->description }} @if($item->quantity > 1)× {{ $item->quantity }}@endif</span><strong>PHP {{ number_format((float) ($item->quantity * $item->unit_price), 2) }}</strong></div>@endforeach
-        <div class="row"><span>Session</span><strong>{{ $payment->appointment->session_number }} of {{ $payment->appointment->service->session_count }}</strong></div>
+        @foreach($payment->appointment->booked_services as $service)
+            <div class="row"><span>{{ $service->name }} session</span><strong>{{ $payment->appointment->session_number }} of {{ $service->pivot?->session_count ?? $service->session_count }}</strong></div>
+        @endforeach
         <div class="row"><span>Payment method</span><strong>{{ ucwords(str_replace('_', ' ', $payment->method)) }}</strong></div>
         @if($payment->reference)<div class="row"><span>Reference</span><strong>{{ $payment->reference }}</strong></div>@endif
+        @php($itemTotalCents = $payment->items->sum(fn ($item) => (int) round((float) $item->unit_price * 100) * (float) $item->quantity))
+        @if((float) $payment->discount_amount > 0)
+            <div class="row"><span>Subtotal</span><strong>PHP {{ number_format($itemTotalCents / 100, 2) }}</strong></div>
+            <div class="row"><span>Discount @if($payment->discount_reason)({{ $payment->discount_reason }})@endif</span><strong>-PHP {{ number_format((float) $payment->discount_amount, 2) }}</strong></div>
+        @endif
+        @if(abs($itemTotalCents - round((float) $payment->discount_amount * 100) - round((float) $payment->amount * 100)) >= 1)
+            <div class="row"><span>Item total</span><strong>PHP {{ number_format($itemTotalCents / 100, 2) }}</strong></div>
+            <p class="muted review-note">The recorded payment differs from the item total. Please ask the studio to review this payment record.</p>
+        @endif
         <div class="row total"><span>Total paid</span><span>PHP {{ number_format((float) $payment->amount, 2) }}</span></div>
-        <p class="muted" style="font-size:12px;margin-top:28px">Recorded by {{ $payment->recorder?->name ?? 'Lunelle staff' }}. Thank you for choosing Lunelle Aesthetics.</p>
-        <button class="no-print" onclick="window.print()" style="margin-top:18px;width:100%;border:0;border-radius:8px;background:#4d4037;color:#fff;padding:13px;font-weight:bold;cursor:pointer">Print or save as PDF</button>
+        @if($payment->appointment->supplyUsages->isNotEmpty())
+            <section class="supplies" aria-labelledby="supplies-heading">
+                <h2 id="supplies-heading">Treatment supplies used</h2>
+                <p class="muted">Included in service &mdash; no additional charge.</p>
+                @foreach($payment->appointment->supplyUsages as $usage)
+                    <div class="row"><span>{{ $usage->product?->name ?? 'Treatment supply' }}</span><span>Qty: {{ number_format(abs((float) $usage->quantity), 2) }}</span></div>
+                @endforeach
+            </section>
+        @endif
+        <footer class="receipt-footer"><p>Recorded by {{ $payment->recorder?->name ?? 'Lunelle staff' }}</p><p>Thank you for choosing<br>Lunelle Aesthetics.</p></footer>
     </main>
+    <div class="print-controls no-print"><button onclick="window.print()">Print or save as PDF</button></div>
 </body>
 </html>

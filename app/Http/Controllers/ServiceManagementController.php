@@ -21,6 +21,7 @@ class ServiceManagementController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $request->merge(['_editing_service_id' => null]);
         Service::create($this->validated($request));
 
         return back()->with('status', 'Service created.');
@@ -28,6 +29,7 @@ class ServiceManagementController extends Controller
 
     public function update(Request $request, Service $service): RedirectResponse
     {
+        $request->merge(['_editing_service_id' => (string) $service->id]);
         $service->update($this->validated($request));
 
         return back()->with('status', 'Service updated.');

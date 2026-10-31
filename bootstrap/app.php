@@ -11,6 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [\App\Http\Middleware\EnsureActiveAccount::class, \App\Http\Middleware\LockConsentTablet::class]);
         $middleware->alias([
             'administrator' => \App\Http\Middleware\EnsureUserIsAdministrator::class,
             'studio-team' => \App\Http\Middleware\EnsureStudioTeam::class,

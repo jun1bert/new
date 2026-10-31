@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Service;
-use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -17,18 +16,11 @@ class PortalController extends Controller
             ? $user->user_type
             : 'member';
 
-        $appointments = Appointment::query()->with(['client', 'service']);
+        $appointments = Appointment::query()->with(['client', 'service', 'services']);
 
         if ($type === 'member') {
             $appointments->where('user_id', $user->id);
         }
-
-        $monthStart = now()->startOfMonth();
-        $monthEnd = now()->endOfMonth();
-        $monthAppointments = (clone $appointments)
-            ->whereBetween('scheduled_at', [$monthStart, $monthEnd])
-            ->orderBy('scheduled_at')
-            ->get();
 
         $previousAppointments = $type === 'member'
             ? (clone $appointments)->orderByDesc('scheduled_at')->limit(5)->get()
@@ -37,20 +29,14 @@ class PortalController extends Controller
             ? Service::query()->where('is_active', true)->orderBy('category')->orderBy('name')->get()
             : collect();
 
-        $calendarStart = $monthStart->copy()->startOfWeek(Carbon::SUNDAY);
-        $calendarEnd = $monthEnd->copy()->endOfWeek(Carbon::SATURDAY);
-        $calendarDays = collect();
-        for ($day = $calendarStart->copy(); $day->lte($calendarEnd); $day->addDay()) {
-            $calendarDays->push($day->copy());
-        }
-
         $stats = [
             'total' => (clone $appointments)->count(),
-            'pending' => (clone $appointments)->where('status', 'scheduled')->count(),
-            'confirmed' => 0,
+            'pending' => (clone $appointments)->where('status', 'pending')->count(),
+            'scheduled' => (clone $appointments)->where('status', 'scheduled')->count(),
             'completed' => (clone $appointments)->where('status', 'completed')->count(),
         ];
 
-        return view('dashboard', compact('user', 'type', 'stats', 'monthStart', 'monthAppointments', 'previousAppointments', 'bookableServices', 'calendarDays'));
+        $calendar = $type !== 'member' ? app(SchedulingController::class)->calendarData($request) : [];
+        return view('dashboard', array_merge(compact('user', 'type', 'stats', 'previousAppointments', 'bookableServices'), $calendar));
     }
 }

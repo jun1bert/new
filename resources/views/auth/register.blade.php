@@ -1,10 +1,15 @@
 <x-guest-layout>
+    <div class="auth-heading mb-6">
+        <p class="auth-eyebrow">A LITTLE CARE STARTS HERE</p>
+        <h1>Your next chapter<br>of <em>self-care.</em></h1>
+        <p class="auth-intro">Create your account to keep your Lunelle appointments in one place.</p>
+    </div>
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
+            <x-input-label for="name" :value="__('Full name')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
@@ -17,13 +22,17 @@
         </div>
 
         <!-- Password -->
-        <div class="mt-4">
+        <div class="mt-4" x-data="{ visible: false }">
             <x-input-label for="password" :value="__('Password')" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
+            <div class="auth-password">
+            <x-text-input id="password" class="block mt-1 w-full" x-bind:type="visible ? 'text' : 'password'"
                             type="password"
                             name="password"
-                            required autocomplete="new-password" />
+                            required autocomplete="new-password" aria-describedby="password-hint" />
+            <button type="button" class="auth-show" x-on:click="visible = !visible" x-bind:aria-pressed="visible" aria-controls="password" x-text="visible ? 'Hide' : 'Show'">Show</button>
+            </div>
+            <p id="password-hint" class="auth-hint">Use at least 8 characters.</p>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
@@ -44,8 +53,8 @@
                 {{ __('Already registered?') }}
             </a>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
+            <x-primary-button class="auth-submit">
+                {{ __('Create account') }}
             </x-primary-button>
         </div>
     </form>

@@ -23,10 +23,14 @@
     // Use the images published in Gallery Management. The built-in photos remain
     // visible until the studio uploads its first gallery image.
     $galleryImages = $galleryImages->isNotEmpty() ? $galleryImages : collect([
-        ['url' => asset('images/lunelle-placeholder.svg'), 'title' => 'Lunelle Aesthetics', 'caption' => 'Studio imagery coming soon.', 'path' => 'images/lunelle-placeholder.svg', 'exists_on_disk' => true],
+        ['url' => asset('images/facial-ritual.jpg'), 'title' => 'The art of care', 'caption' => 'Facial-care inspiration. Stock photograph by Gustavo Fring / Pexels.', 'path' => 'images/facial-ritual.jpg', 'exists_on_disk' => true],
+        ['url' => asset('images/spa-ritual.jpg'), 'title' => 'A softer kind of everyday', 'caption' => 'Self-care inspiration. Stock photograph by Camille Brodard / Unsplash.', 'path' => 'images/spa-ritual.jpg', 'exists_on_disk' => true],
     ])->map(fn ($image) => (object) $image);
 
     $bookedSlots = [];
+    $publicBookingHours = \Illuminate\Support\Facades\Schema::hasTable('scheduling_settings')
+        ? json_decode(\Illuminate\Support\Facades\DB::table('scheduling_settings')->where('id', 1)->value('hours') ?? 'null', true)
+        : null;
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +41,8 @@
 
     @include('layouts.partials.favicon')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="description" content="Discover Lunelle Aesthetics. Explore skin, body, and beauty services and request your next appointment online.">
+    @vite(['resources/css/app.css', 'resources/css/landing.css', 'resources/js/app.js'])
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -433,6 +438,7 @@
 </head>
 
 <body id="top" class="relative overflow-x-hidden">
+<a href="#services" class="skip-link">Skip to services</a>
 
 {{-- Header --}}
 <header class="fixed top-0 z-50 w-full border-b border-[var(--desert-rock)]/25 bg-[var(--porcelain-mist)]/92 shadow-[0_8px_30px_rgba(77,64,55,.08)] backdrop-blur-xl">
@@ -454,26 +460,29 @@
             @endauth
             <a href="#book"
                class="shrink-0 whitespace-nowrap rounded-full bg-[var(--desert-rock)] px-3.5 py-2 font-bold text-white shadow-md shadow-[#4d4037]/10 transition hover:bg-[#806752] sm:px-5">
-                Book appointment
+                <span class="sm:hidden">Book now</span><span class="hidden sm:inline">Book appointment</span>
             </a>
         </nav>
     </div>
+    <nav class="landing-mobile-nav" aria-label="Explore Lunelle">
+        <a href="#about">About</a><a href="#services">Services</a><a href="#gallery">Gallery</a><a href="#location">Location</a>
+    </nav>
 </header>
 
 {{-- Hero --}}
 @php
-    $heroImage = asset('images/lunelle-placeholder.svg');
+    $heroImage = asset('images/facial-ritual.jpg');
 @endphp
 <section class="hero-media relative min-h-[86vh] px-4 pt-28 sm:pt-32"
          style="--hero-image: url('{{ $heroImage }}');">
     <div class="hero-layout mx-auto max-w-7xl">
-        <div class="max-w-2xl py-12 text-[var(--ink)] sm:py-16">
+        <div class="hero-copy max-w-2xl py-12 text-[var(--ink)] sm:py-16">
             <p class="text-[10px] sm:text-xs tracking-[0.28em] uppercase text-[var(--desert-rock)]">
                 Beauty · Wellness · Self-care
             </p>
             <h1 class="hero-cursive-title mt-5 text-[var(--ink)]" style="text-shadow:none;-webkit-text-stroke:0">
-                <span class="block">Where Beauty</span>
-                <span class="hero-cursive-tail mt-1 block">Meets Wellness</span>
+                <span class="block">A little care.</span>
+                <span class="hero-cursive-tail mt-1 block">A lovely glow.</span>
             </h1>
             <p class="mt-6 max-w-xl text-sm leading-7 text-[var(--muted)] sm:text-base">
                 A contemporary sanctuary for thoughtful skin, body, and beauty rituals—designed around your own kind of glow.
@@ -483,32 +492,25 @@
 
         </div>
 
-        <div class="hero-visual relative hidden lg:block">
-            <img src="{{ asset('images/lunelle-placeholder.svg') }}" alt="Lunelle Aesthetics image placeholder"
-                 class="hero-photo absolute right-0 top-1/2 h-[500px] w-full max-w-[410px] -translate-y-1/2 rounded-[2rem] object-cover">
+        <div class="hero-visual">
+            <img src="{{ $heroImage }}" alt="An aesthetician gently applying a facial mask during a skincare treatment"
+                 fetchpriority="high" width="1400" height="933" class="hero-photo">
+            <div class="hero-image-note"><span class="hero-note-mark" aria-hidden="true">L.</span><div><span class="eyebrow">THE LUNELLE MOMENT</span><p>Make a little time for yourself.</p></div></div>
         </div>
     </div>
 </section>
 
 {{-- Establishment preview --}}
+<div class="ritual-strip" aria-label="The Lunelle experience"><span>Beauty, at your pace</span><span aria-hidden="true">✦</span><span>Care that feels personal</span><span aria-hidden="true">✦</span><span>A moment, just for you</span></div>
 <section id="about" class="scroll-mt-20 px-4 py-8 sm:px-6 sm:py-10">
-    <div class="mx-auto grid max-w-7xl grid-cols-2 gap-3 sm:grid-cols-5">
-        @foreach([
-            ['src' => asset('images/lunelle-placeholder.svg'), 'alt' => 'Lunelle Aesthetics image placeholder'],
-        ] as $photo)
-            <img src="{{ $photo['src'] }}"
-                 alt="{{ $photo['alt'] }}"
-                 loading="lazy"
-                 class="establishment-thumb h-40 w-full rounded-2xl object-cover sm:h-52 lg:h-56 {{ $loop->last ? 'col-span-2 sm:col-span-1' : '' }}">
-        @endforeach
-    </div>
     <div class="mx-auto mt-12 grid max-w-6xl gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-center"><div><p class="text-xs font-bold uppercase tracking-[.22em] text-[var(--desert-rock)]">Our philosophy</p><h2 class="mt-3 text-4xl leading-tight text-[var(--ink)]">Your moment to <em class="font-serif text-[var(--desert-rock)]">relax, refresh &amp; renew.</em></h2></div><div><p class="leading-7 text-[var(--muted)]">Lunelle brings together thoughtful beauty rituals and a tranquil, welcoming setting—so every visit feels personal, unhurried, and restorative.</p><div class="mt-6 grid gap-3 sm:grid-cols-3"><div class="rounded-xl bg-white/70 p-4 text-sm font-semibold text-[var(--ink)]">Professional care</div><div class="rounded-xl bg-white/70 p-4 text-sm font-semibold text-[var(--ink)]">Relaxing experience</div><div class="rounded-xl bg-white/70 p-4 text-sm font-semibold text-[var(--ink)]">Premium services</div></div></div></div>
 </section>
 
 {{-- Services --}}
 <section id="services" class="section-band scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20">
     <div class="mb-10 text-center sm:mb-12">
-        <h2 class="text-3xl font-light">Explore <span class="cursive-accent text-4xl text-[var(--desert-rock)] sm:text-5xl">Our Services</span></h2>
+        <p class="eyebrow mb-3">CARE, CHOSEN BY YOU</p>
+        <h2 class="section-heading">Find your <em>feel-good ritual.</em></h2>
         <p class="text-[var(--muted)] mt-3 text-sm">Choose a category to find the treatment that fits your visit.</p>
     </div>
 
@@ -524,6 +526,7 @@
                             class="service-category-tab shrink-0 rounded-full border px-4 py-2.5 text-sm font-semibold transition {{ $loop->first ? 'border-[var(--desert-rock)] bg-[var(--desert-rock)] text-white' : 'service-gold-text border-[var(--soft-sandstone)] bg-[var(--feather-white)] hover:bg-[var(--creamed-oat)]' }}"
                             role="tab"
                             aria-selected="{{ $loop->first ? 'true' : 'false' }}"
+                            tabindex="{{ $loop->first ? '0' : '-1' }}"
                             aria-controls="service-category-{{ $loop->index }}"
                             data-category-target="service-category-{{ $loop->index }}">
                         {{ $category }}
@@ -543,17 +546,23 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 items-start gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="service-card-grid grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                         @foreach($categoryServices as $service)
                             <article class="service-luxe-card warm-panel flex min-h-[230px] flex-col rounded-2xl p-6">
-                                <div class="flex flex-1 flex-col">
+                                <div class="service-card-heading" aria-hidden="true">
+                                    <span class="service-ritual-mark"><svg viewBox="0 0 48 48" fill="none"><path d="M24 36C12 36 7 28 8 19c9 0 15 5 16 17Zm0 0c12 0 17-8 16-17-9 0-15 5-16 17Z" stroke="currentColor" stroke-width="1.3"/><path d="M24 32c-8-7-8-15 0-23 8 8 8 16 0 23Z" stroke="currentColor" stroke-width="1.3"/><path d="M14 40h20" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+                                    <span class="service-card-category">{{ $category }}</span>
+                                    <span class="service-card-number">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                </div>
+                                <div class="service-card-body flex flex-1 flex-col">
                                 <div class="flex items-start justify-between gap-4">
                                     <h4 class="service-gold-text text-xl">{{ $service->name }}</h4>
                                     @if($service->requires_consent)
                                         <span class="shrink-0 rounded-full bg-[rgba(164,141,120,.14)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--desert-rock)]">Consent</span>
                                     @endif
                                 </div>
-                                <div class="mt-2 flex items-center gap-2 text-sm">
+                                <p class="service-price mt-4">&#8369;{{ number_format($service->price, 2) }}</p>
+                                <div class="service-card-details mt-2 flex flex-wrap items-center gap-2 text-sm">
                                     <span class="text-[var(--muted)]">{{ $service->duration ? $service->duration.' mins' : 'No fixed duration' }}</span>
                                     @if($service->session_count > 1)
                                         <span class="text-[var(--soft-sandstone)]">&bull;</span>
@@ -567,7 +576,7 @@
                                    data-book-service="{{ $service->id }}"
                                    data-book-category="{{ $service->category }}"
                                    class="service-gold-link mt-auto pt-5 text-sm font-bold underline decoration-1 underline-offset-4">
-                                    Book this service
+                                    <span>Book this service</span><span class="service-book-arrow" aria-hidden="true">&#8599;</span>
                                 </a>
                                 </div>
                             </article>
@@ -584,8 +593,9 @@
 {{-- Gallery --}}
 <section id="gallery" class="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20">
     <div class="mb-10 text-center sm:mb-12">
-        <h2 class="cursive-accent text-4xl font-light text-[var(--desert-rock)] sm:text-5xl">Our Space</h2>
-        <p class="text-[var(--muted)] mt-3 text-sm">A sanctuary of calm and beauty</p>
+        <p class="eyebrow mb-3">A CLOSER LOOK</p>
+        <h2 class="section-heading">A little <em>inspiration.</em></h2>
+        <p class="text-[var(--muted)] mt-3 text-sm">Beauty rituals and moments of calm</p>
     </div>
 
     @if($galleryImages->isEmpty())
@@ -594,7 +604,7 @@
         @php
             $visibleGalleryCount = 6;
         @endphp
-        <div class="mx-auto grid max-w-7xl grid-cols-1 gap-5 lg:grid-cols-3">
+        <div class="gallery-grid mx-auto grid max-w-7xl grid-cols-1 gap-5 {{ $galleryImages->count() === 2 ? 'md:grid-cols-2' : 'lg:grid-cols-3' }}">
             @foreach($galleryImages as $image)
                 @php
                     $galleryUrl = $image->url;
@@ -602,7 +612,7 @@
                 @endphp
                 <button type="button"
                     class="gallery-card relative overflow-hidden rounded-2xl bg-[var(--creamed-oat)] group animate-fade-up w-full text-left shadow-xl shadow-[#4d4037]/10
-                           {{ $loop->first ? 'lg:col-span-2 lg:row-span-2' : '' }} {{ $isHiddenGalleryItem ? 'hidden' : '' }}"
+                           {{ $loop->first && $galleryImages->count() > 2 ? 'lg:col-span-2 lg:row-span-2' : '' }} {{ $isHiddenGalleryItem ? 'hidden' : '' }}"
                     @if($image->exists_on_disk) onclick="openGalleryModal(this)" @endif
                     data-gallery-src="{{ $galleryUrl }}"
                     data-gallery-title="{{ $image->title ?? 'Gallery image' }}"
@@ -663,7 +673,7 @@
 </section>
 
 {{-- Why Lunelle --}}
-<section class="px-4 py-20 sm:px-6 sm:py-28">
+<section id="why-lunelle" class="px-4 py-20 sm:px-6 sm:py-28">
     <div class="mx-auto max-w-6xl">
         <div class="mx-auto max-w-2xl text-center">
             <p class="text-xs font-bold uppercase tracking-[.22em] text-[var(--desert-rock)]">Why Lunelle</p>
@@ -753,9 +763,7 @@
                     Member Login
                 </a>
 
-                <a href="#book"
-                   target="_blank"
-                   rel="noopener"
+                <a href="#services"
                    class="rounded-xl border border-[var(--desert-rock)]/35 bg-[var(--feather-white)]/70 px-4 py-3 text-center font-semibold text-[var(--ink)] transition hover:bg-[var(--creamed-oat)]">
                     Explore services
                 </a>
@@ -764,7 +772,7 @@
         </div>
 
         {{-- Storefront Photo --}}
-        <div class="warm-panel overflow-hidden rounded-2xl p-3">
+        <div class="location-visual warm-panel overflow-hidden rounded-2xl p-3">
 
             <img
                 src="{{ asset('images/lunelle-placeholder.svg') }}"
@@ -799,8 +807,8 @@
             </p>
             <div class="mt-6 space-y-3 text-sm text-[var(--muted)]">
                 <p class="booking-help-step rounded-xl p-3" data-guide-step="1"><span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">1</span><strong class="text-[var(--ink)]">Your details</strong><br><span class="ml-8 block text-xs">Add the name and number we can contact.</span></p>
-                <p class="booking-help-step rounded-xl p-3" data-guide-step="2"><span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">2</span><strong class="text-[var(--ink)]">Schedule</strong><br><span class="ml-8 block text-xs">Select your preferred date and time.</span></p>
-                <p class="booking-help-step rounded-xl p-3" data-guide-step="3"><span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">3</span><strong class="text-[var(--ink)]">Services</strong><br><span class="ml-8 block text-xs">Choose for yourself or add clients for a group.</span></p>
+                <p class="booking-help-step rounded-xl p-3" data-guide-step="2"><span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">2</span><strong class="text-[var(--ink)]">Services</strong><br><span class="ml-8 block text-xs">Choose treatments for yourself or each client.</span></p>
+                <p class="booking-help-step rounded-xl p-3" data-guide-step="3"><span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">3</span><strong class="text-[var(--ink)]">Date and time</strong><br><span class="ml-8 block text-xs">Choose a time that fits your treatments.</span></p>
                 <p class="booking-help-step rounded-xl p-3" data-guide-step="4"><span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">4</span><strong class="text-[var(--ink)]">Review and send</strong><br><span class="ml-8 block text-xs">Check details before submitting.</span></p>
             </div>
             <p class="mt-5 rounded-xl bg-[var(--feather-white)]/70 p-3 text-xs leading-6 text-[var(--muted)]">Some services need consent. We will help you review and sign it at the store before treatment.</p>
@@ -843,7 +851,7 @@
             <div class="mb-6">
                 <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-semibold text-[var(--muted)] sm:text-[11px]"><span>Details</span><span>Schedule</span><span>Services</span><span>Review</span></div>
                 <div class="mt-2 h-2 overflow-hidden rounded-full bg-[var(--creamed-oat)]"><div id="bookingStepProgress" class="h-full w-1/4 rounded-full bg-[var(--desert-rock)] transition-all duration-300"></div></div>
-                <p id="bookingStepTitle" class="mt-4 text-center text-sm font-semibold text-[var(--ink)]">Step 1 of 4 - Your details</p>
+                <p id="bookingStepTitle" aria-live="polite" aria-atomic="true" class="mt-4 text-center text-sm font-semibold text-[var(--ink)]">Step 1 of 4 - Your details</p>
             </div>
 
             {{-- Service --}}
@@ -861,6 +869,7 @@
                     'category' => $service->category,
                     'price' => (float) $service->price,
                     'session_count' => (int) $service->session_count,
+                    'duration' => (int) ($service->duration ?: 60),
                 ])->values();
             @endphp
             <div data-booking-step="1" class="flex flex-col gap-5">
@@ -900,7 +909,7 @@
             </div>
             </div>
 
-            <div data-booking-step="3" class="hidden flex flex-col gap-5">
+            <div data-booking-step="2" class="hidden flex flex-col gap-5">
             <div class="order-2 rounded-2xl border border-[var(--soft-sandstone)]/45 bg-white/45 p-4">
                 <p class="mb-3 text-sm font-semibold text-[var(--ink)]">Who is coming?</p>
                 <div class="grid gap-3 sm:grid-cols-2">
@@ -931,7 +940,7 @@
 
             <div class="order-3 min-w-0">
                 <div id="serviceFilterBar" class="sticky top-20 z-20 mb-4 rounded-2xl border border-[var(--soft-sandstone)]/45 bg-[rgba(246,241,232,.96)] p-3 shadow-lg shadow-[#4d4037]/10 backdrop-blur">
-                <label for="serviceSearch" class="mb-2 block text-sm font-semibold text-[var(--ink)]">3. Choose service</label>
+                <label for="serviceSearch" class="mb-2 block text-sm font-semibold text-[var(--ink)]">2. Choose service</label>
                 <div class="relative mb-3">
                     <input id="serviceSearch" type="search" class="form-field w-full rounded-xl py-3 pl-4 pr-10" placeholder="Search by service" autocomplete="off">
                     <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" aria-hidden="true">⌕</span>
@@ -975,7 +984,7 @@
                     <p id="currentClientCartEmpty" class="mt-2 text-xs text-[var(--muted)]">Your cart is empty. Tap a service below to add it.</p>
                     <div id="currentClientCartItems" class="mt-2 space-y-2"></div>
                     <button id="cartChooseDateButton" type="button" class="mt-3 hidden w-full rounded-xl bg-[var(--desert-rock)] px-4 py-3 text-sm font-semibold text-white">
-                        Review request
+                        Choose date and time
                     </button>
                     <button id="applyServicesToAll" type="button" class="mt-3 hidden w-full rounded-xl border border-[var(--desert-rock)]/35 bg-white/80 px-3 py-2 text-xs font-semibold text-[var(--ink)]">
                         Apply these services to all clients
@@ -1018,14 +1027,14 @@
             </div>
             </div>
 
-            <div data-booking-step="2" class="hidden space-y-5">
+            <div data-booking-step="3" class="hidden space-y-5">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="field_date" class="mb-2 block text-sm font-semibold text-[var(--ink)]">Appointment date</label>
                     <div class="flex gap-2">
                         <input type="date" id="field_date" name="date"
                                value="{{ old('date') }}"
-                               min="{{ now()->toDateString() }}"
+                               min="{{ now('Asia/Manila')->toDateString() }}"
                                class="form-field min-w-0 flex-1 p-4 rounded-xl">
                         <button type="button" id="openDatePicker" class="btn-gold min-h-14 shrink-0 rounded-xl px-4 text-sm font-semibold" aria-label="Open appointment calendar">Calendar</button>
                     </div>
@@ -1034,13 +1043,10 @@
 
                 <div>
                     <label for="field_time" class="mb-2 block text-sm font-semibold text-[var(--ink)]">Appointment time</label>
-                    <select id="field_time" name="time" class="form-field w-full p-4 rounded-xl">
-                        <option value="">Select time</option>
-                        @for($minutes = 9 * 60; $minutes <= 19 * 60; $minutes += 30)
-                            @php($slot = sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60))
-                            <option value="{{ $slot }}" @selected(old('time') === $slot)>{{ \Carbon\Carbon::createFromFormat('H:i', $slot)->format('g:i A') }}</option>
-                        @endfor
+                    <select id="field_time" name="time" data-previous-time="{{ old('time') }}" class="form-field w-full p-4 rounded-xl" aria-describedby="bookingTimeGuidance hint_time">
+                        <option value="">Choose a date first</option>
                     </select>
+                    <p id="bookingTimeGuidance" class="mt-2 text-xs text-[var(--muted)]" aria-live="polite">Times are shown in Philippine time.</p>
                     <p id="hint_time" class="field-hint hidden"></p>
                 </div>
             </div>
@@ -1233,6 +1239,7 @@ function showServiceCategory(tab) {
     serviceCategoryTabs.forEach((item) => {
         const selected = item === tab;
         item.setAttribute('aria-selected', selected ? 'true' : 'false');
+        item.tabIndex = selected ? 0 : -1;
         item.classList.toggle('border-[var(--desert-rock)]', selected);
         item.classList.toggle('bg-[var(--desert-rock)]', selected);
         item.classList.toggle('text-white', selected);
@@ -1249,6 +1256,18 @@ function showServiceCategory(tab) {
 
 serviceCategoryTabs.forEach((tab) => {
     tab.addEventListener('click', () => showServiceCategory(tab));
+    tab.addEventListener('keydown', (event) => {
+        const tabs = Array.from(serviceCategoryTabs);
+        const index = tabs.indexOf(tab);
+        const target = event.key === 'ArrowRight' ? tabs[(index + 1) % tabs.length]
+            : event.key === 'ArrowLeft' ? tabs[(index - 1 + tabs.length) % tabs.length]
+            : event.key === 'Home' ? tabs[0] : event.key === 'End' ? tabs.at(-1) : null;
+        if (!target) return;
+        event.preventDefault();
+        showServiceCategory(target);
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    });
 });
 
 document.querySelectorAll('[data-book-service]').forEach((link) => {
@@ -1349,9 +1368,11 @@ function updateBookingEstimate() {
     document.getElementById('estimateServiceCount').textContent = selectedIds.length;
     document.getElementById('estimateClientCount').textContent = participantState.length;
     document.getElementById('estimateTotal').textContent = `PHP ${total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (window.LunelleBookingTimes) updateAvailableTimes();
 }
 
 const bookingServiceCatalog = @json($bookingServiceCatalog);
+const publicBookingHours = @json($publicBookingHours);
 const previousParticipants = @json(array_values(old('participants', [])));
 const initialPrimaryServiceIds = @json($firstServiceIds->values());
 let participantState = previousParticipants.length
@@ -1468,7 +1489,7 @@ function renderParticipantSummary() {
 function updateGroupNextButtonLabel() {
     const nextButton = document.getElementById('saveAndAddParticipant');
     if (!nextButton) return;
-    nextButton.textContent = currentParticipantIndex < participantState.length - 1 ? 'Save & next client' : 'Proceed to review';
+    nextButton.textContent = currentParticipantIndex < participantState.length - 1 ? 'Save & next client' : 'Choose date and time';
 }
 
 function refreshBookingModeControls() {
@@ -1482,7 +1503,7 @@ function refreshBookingModeControls() {
     const sizeDisplay = document.getElementById('groupSizeDisplay');
     if (sizeDisplay) sizeDisplay.textContent = participantState.length;
     updateGroupNextButtonLabel();
-    document.getElementById('bookingStepNext')?.classList.toggle('hidden', currentBookingStep === 4 || (currentBookingStep === 3 && isGroupBooking));
+    document.getElementById('bookingStepNext')?.classList.toggle('hidden', currentBookingStep === 4 || (currentBookingStep === 2 && isGroupBooking));
     renderCurrentClientCart();
 }
 
@@ -1554,15 +1575,21 @@ function isFullyBooked(dateStr) {
 function updateAvailableTimes() {
     const timeField = document.getElementById('field_time');
     if (!timeField || !timeField.options) return;
-
-    Array.from(timeField.options).forEach((option) => {
-        if (!option.value) return;
-
-        const baseLabel = option.dataset.label || option.textContent.replace(' (Booked)', '').replace(' (Unavailable)', '');
-        option.dataset.label = baseLabel;
-        option.disabled = false;
-        option.textContent = baseLabel;
-    });
+    const previous = timeField.value || timeField.dataset.previousTime || '';
+    const date = document.getElementById('field_date').value;
+    const durations = new Map(bookingServiceCatalog.map(service => [String(service.id), service.duration]));
+    const duration = Math.max(0, ...participantState.map(participant => participant.service_ids.reduce((total, id) => total + (durations.get(String(id)) || 60), 0)));
+    const result = window.LunelleBookingTimes.publicRequestTimes({ date, hours: publicBookingHours, duration });
+    timeField.replaceChildren(new Option(!date ? 'Choose a date first' : (result.slots.length ? 'Select time' : 'No times available'), ''));
+    result.slots.forEach(slot => timeField.add(new Option(slot.label, slot.value)));
+    timeField.disabled = !result.slots.length;
+    timeField.dataset.unavailableReason = result.slots.length ? '' : result.message;
+    if (result.slots.some(slot => slot.value === previous)) timeField.value = previous;
+    timeField.dataset.previousTime = '';
+    document.getElementById('bookingTimeGuidance').textContent = result.message;
+    setHint('hint_time', previous && !timeField.value && result.slots.length ? 'Please choose a new time that fits your treatments.' : '', '');
+    timeField.classList.remove('field-error');
+    timeField.setAttribute('aria-invalid', 'false');
 }
 
 function resetServiceListScroll() {
@@ -1582,11 +1609,7 @@ function keepServicePickerInView() {
 
 /* Date helpers */
 function todayString() {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+    return window.LunelleBookingTimes.philippineDateTime().slice(0, 10);
 }
 
 function formatDateFriendly(dateStr) {
@@ -1684,8 +1707,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!document.querySelector('#serviceChoiceGrid .service-choice-input:checked')) showCurrentClientServiceRequired();
             return;
         }
-        if (!validateBookingStep(3)) return;
-        showBookingStep(4);
+        if (!validateBookingStep(2)) return;
+        goToScheduleStep();
     });
 
     document.getElementById('participantSummaryToggle')?.addEventListener('click', () => {
@@ -1709,7 +1732,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 setHint('hint_participant', 'Add at least one more client for a group booking.', 'error');
                 return;
             }
-            showBookingStep(4);
+            if (!validateBookingStep(2)) return;
+            goToScheduleStep();
         }
     });
 
@@ -1750,7 +1774,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dateField.addEventListener('change', () => {
             updateAvailableTimes();
             validateDate();
-            validateTime();
+            if (document.getElementById('field_time').value) validateTime();
         });
 
         document.getElementById('openDatePicker')?.addEventListener('click', () => {
@@ -1780,6 +1804,7 @@ function setFieldState(fieldId, ok) {
     const el = document.getElementById(fieldId);
     if (!el) return;
     el.classList.toggle('field-error', !ok);
+    el.setAttribute('aria-invalid', ok ? 'false' : 'true');
 }
 
 function validateName() {
@@ -1907,10 +1932,11 @@ function validateDate() {
 }
 
 function validateTime() {
+    updateAvailableTimes();
     const val = document.getElementById('field_time').value;
     const dateVal = document.getElementById('field_date').value;
     if (!val) {
-        setHint('hint_time', 'Please select a time.', 'error');
+        setHint('hint_time', document.getElementById('field_time').dataset.unavailableReason || 'Please select a time.', 'error');
         setFieldState('field_time', false);
         return false;
     }
@@ -1929,12 +1955,12 @@ document.getElementById('field_service')?.addEventListener('change', () => {
     validateService();
     toggleConsentSection();
     updateAvailableTimes();
-    validateTime();
+    if (document.getElementById('field_time').value) validateTime();
 });
 document.getElementById('field_time')?.addEventListener('change', validateTime);
 
 let currentBookingStep = 1;
-const bookingStepTitles = ['Your details', 'Schedule', 'Services', 'Review and send'];
+const bookingStepTitles = ['Your details', 'Services', 'Date and time', 'Review and send'];
 
 function showBookingStep(step) {
     currentBookingStep = Math.max(1, Math.min(4, step));
@@ -1942,14 +1968,15 @@ function showBookingStep(step) {
     document.getElementById('bookingStepProgress').style.width = `${currentBookingStep * (100 / 4)}%`;
     document.getElementById('bookingStepTitle').textContent = `Step ${currentBookingStep} of 4 - ${bookingStepTitles[currentBookingStep - 1]}`;
     document.getElementById('bookingStepBack').classList.toggle('invisible', currentBookingStep === 1);
-    document.getElementById('bookingStepNext').classList.toggle('hidden', currentBookingStep === 4 || (currentBookingStep === 3 && isGroupBooking));
-    document.getElementById('bookingStepNext').textContent = currentBookingStep === 1 ? 'Choose schedule' : (currentBookingStep === 2 ? 'Choose services' : 'Review request');
+    document.getElementById('bookingStepNext').classList.toggle('hidden', currentBookingStep === 4 || (currentBookingStep === 2 && isGroupBooking));
+    document.getElementById('bookingStepNext').textContent = currentBookingStep === 1 ? 'Choose services' : (currentBookingStep === 2 ? 'Choose date and time' : 'Review request');
     document.querySelectorAll('[data-guide-step]').forEach(item => item.dataset.active = String(currentBookingStep) === item.dataset.guideStep ? 'true' : 'false');
+    if (currentBookingStep === 3) updateAvailableTimes();
     if (currentBookingStep === 4) updateWizardReviewV2();
 }
 
 function goToScheduleStep(openPicker = false) {
-    showBookingStep(2);
+    showBookingStep(3);
     const dateField = document.getElementById('field_date');
     if (!dateField) return;
     dateField.focus({ preventScroll: true });
@@ -1963,8 +1990,8 @@ function goToScheduleStep(openPicker = false) {
 
 function validateBookingStep(step) {
     if (step === 1) return validateName() && validateContact() && validateEmail();
-    if (step === 2) return validateDate() && validateTime();
-    if (step === 3) return validatePartySize() && validateService();
+    if (step === 3) return validateDate() && validateTime();
+    if (step === 2) return validatePartySize() && validateService();
     if (step === 4) return true;
     return true;
 }
@@ -1981,7 +2008,7 @@ function updateWizardReviewV2() {
         <button type="button" data-review-edit="${index}" class="text-xs font-semibold text-[var(--desert-rock)]">Edit</button>
     </div>`).join('');
     reviewList.querySelectorAll('[data-review-edit]').forEach(button => button.addEventListener('click', () => {
-        showBookingStep(3);
+        showBookingStep(2);
         renderParticipantEditor(Number(button.dataset.reviewEdit));
     }));
 }
@@ -2007,9 +2034,9 @@ function openConfirmModal() {
     if (!okName || !okContact || !okEmail || !okService || !okPartySize || !okDate || !okTime || !okConsent) {
         if (!okName || !okContact || !okEmail) {
             showBookingStep(1);
-        } else if (!okDate || !okTime) {
-            showBookingStep(2);
         } else if (!okService || !okPartySize) {
+            showBookingStep(2);
+        } else if (!okDate || !okTime) {
             showBookingStep(3);
         }
         const firstErr = document.querySelector('.field-error');
