@@ -39,7 +39,7 @@ class MultiServiceAppointmentTest extends TestCase
         $this->assertSame(60, $appointment->total_duration);
         $this->get('/studio/appointments?search=Laser')->assertOk()->assertSee('Facial, Laser');
         $this->patch(route('studio.appointments.complete', $appointment), [
-            'amount' => 0, 'method' => 'cash', 'discount_amount' => 20,
+            'amount' => 180.50, 'method' => 'cash', 'discount_amount' => 20,
         ])->assertSessionHasNoErrors();
         $payment = $appointment->fresh()->payment;
         $this->assertSame('180.50', $payment->amount);
@@ -80,9 +80,10 @@ class MultiServiceAppointmentTest extends TestCase
         $appointment = $this->schedule([$single, $course]);
         $course->update(['session_count' => 1]);
         for ($session = 1; $session <= 3; $session++) {
-            $this->patch(route('studio.appointments.complete', $appointment), ['amount' => 0, 'method' => 'cash'])
+            $this->patch(route('studio.appointments.complete', $appointment), ['amount' => $session === 1 ? 200.50 : 0, 'method' => 'cash'])
                 ->assertSessionHasNoErrors();
-            $this->assertSame($session === 1 ? '200.50' : '100.25', $appointment->fresh()->payment->amount);
+            $this->assertSame($session === 1 ? '200.50' : '0.00', $appointment->fresh()->payment->amount);
+            $this->assertSame(0, $appointment->fresh()->invoice->balance_cents);
             $payload = ['scheduled_at' => now()->addDays($session + 1)->toDateTimeString()];
             if ($session === 3) {
                 $this->post(route('studio.appointments.next-session', $appointment), $payload)->assertStatus(422);

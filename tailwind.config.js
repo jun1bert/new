@@ -12,7 +12,13 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['DM Sans', ...defaultTheme.fontFamily.sans],
+                serif: ['Playfair Display', ...defaultTheme.fontFamily.serif],
+            },
+            colors: {
+                forest: 'var(--brand-forest)', moss: 'var(--brand-moss)', sage: 'var(--brand-sage)',
+                terracotta: 'var(--brand-terracotta)', cream: 'var(--brand-cream)',
+                'brand-neutral': 'var(--brand-neutral)', 'brand-border': 'var(--brand-border)',
             },
         },
     },

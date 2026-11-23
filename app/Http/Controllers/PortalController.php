@@ -37,6 +37,7 @@ class PortalController extends Controller
         ];
 
         $calendar = $type !== 'member' ? app(SchedulingController::class)->calendarData($request) : [];
-        return view('dashboard', array_merge(compact('user', 'type', 'stats', 'previousAppointments', 'bookableServices'), $calendar));
+        $activeAttendance = $type === 'staff' ? $user->attendances()->whereNull('clocked_out_at')->first() : null;
+        return view('dashboard', array_merge(compact('user', 'type', 'stats', 'previousAppointments', 'bookableServices', 'activeAttendance'), $calendar));
     }
 }

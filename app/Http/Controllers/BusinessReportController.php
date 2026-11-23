@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\PaymentItem;
 use App\Models\Product;
 use App\Models\InventoryMovement;
+use App\Models\TreatmentInvoice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -88,6 +89,8 @@ class BusinessReportController extends Controller
             'averageCents' => $summary->payment_count ? (int) round($collectedCents / $summary->payment_count) : 0,
             'change' => $change, 'statuses' => $statuses, 'visitCount' => $visitCount, 'clientCount' => $clientCount,
             'completionRate' => $visitCount ? round(($statuses['completed'] ?? 0) / $visitCount * 100) : 0,
+            'salesStaffTotals' => (clone $payments)->whereNotNull('sales_staff_id')->selectRaw('sales_staff_id, COUNT(*) as payment_count, SUM(amount) as collected')->with('salesStaff')->groupBy('sales_staff_id')->orderByDesc('collected')->get(),
+            'outstandingInvoices' => TreatmentInvoice::with('firstAppointment.client')->withSum('payments as paid', 'amount')->get()->filter(fn ($invoice) => round((float) $invoice->total * 100) > round(((float) $invoice->paid + (float) $invoice->opening_credit) * 100)),
             'methods' => $methods, 'topServices' => $topServices, 'retailGross' => $retailGross,
             'inventoryRows' => $inventoryRows, 'inventorySummary' => $inventorySummary,
             'trend' => $trend, 'trendMax' => max(1, $trend->max('cents')),
@@ -101,3 +104,4 @@ class BusinessReportController extends Controller
         ]);
     }
 }
+

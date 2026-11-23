@@ -100,10 +100,15 @@ class Appointment extends Model
     }
     public function staff(): BelongsTo { return $this->belongsTo(User::class, 'staff_id'); }
     public function provider(): BelongsTo { return $this->belongsTo(User::class, 'provider_id'); }
+    public function invoice(): HasOne { return $this->hasOne(TreatmentInvoice::class, 'treatment_course_id', 'treatment_course_id'); }
+    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(Payment::class); }
     public function payment(): HasOne { return $this->hasOne(Payment::class); }
     public function consentForm(): HasOne { return $this->hasOne(ConsentForm::class); }
+    public function skinAnalysisPhotos(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(SkinAnalysisPhoto::class); }
     public function supplyUsages(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(InventoryMovement::class)->where('type', 'treatment_usage');
     }
 }
+
+

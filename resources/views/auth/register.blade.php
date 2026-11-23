@@ -2,7 +2,7 @@
     <div class="auth-heading mb-6">
         <p class="auth-eyebrow">A LITTLE CARE STARTS HERE</p>
         <h1>Your next chapter<br>of <em>self-care.</em></h1>
-        <p class="auth-intro">Create your account to keep your Lunelle appointments in one place.</p>
+        <p class="auth-intro">Create your account to keep your appointments in one place.</p>
     </div>
     <form method="POST" action="{{ route('register') }}">
         @csrf

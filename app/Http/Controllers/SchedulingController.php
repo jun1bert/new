@@ -12,6 +12,15 @@ use Illuminate\Validation\ValidationException;
 
 class SchedulingController extends Controller
 {
+    public function settings()
+    {
+        return view('admin.settings.index', [
+            'providers' => $this->providers(),
+            'hours' => json_decode(DB::table('scheduling_settings')->where('id', 1)->value('hours') ?? 'null', true),
+            'shifts' => DB::table('staff_schedules')->get()->keyBy('user_id'),
+        ]);
+    }
+
     public function availability(Request $request)
     {
         $data = $request->validate([

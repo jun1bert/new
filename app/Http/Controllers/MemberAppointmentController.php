@@ -13,7 +13,15 @@ class MemberAppointmentController extends Controller
         abort_unless($appointment->user_id === $request->user()->id, 403);
 
         return view('member.appointments.show', [
-            'appointment' => $appointment->load(['service', 'services', 'staff', 'payment.items.product', 'consentForm']),
+            'appointment' => $appointment->load(['service', 'services', 'staff', 'payment.items.product', 'payments', 'invoice', 'consentForm']),
+        ]);
+    }
+
+    public function paymentReceipt(Request $request, \App\Models\Payment $payment): View
+    {
+        abort_unless($payment->appointment->user_id === $request->user()->id, 404);
+        return view('studio.payments.receipt', [
+            'payment' => $payment->load(['appointment.client', 'appointment.service', 'appointment.services', 'appointment.supplyUsages.product', 'recorder', 'items.product', 'invoice']),
         ]);
     }
 

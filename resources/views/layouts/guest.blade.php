@@ -5,18 +5,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ request()->routeIs('register') ? 'Create your account' : (request()->routeIs('login') ? 'Welcome back' : 'Account access') }} | Lunelle Aesthetics</title>
+        <title>{{ request()->routeIs('register') ? 'Create your account' : (request()->routeIs('login') ? 'Welcome back' : 'Account access') }} | Shafer's Skin Lovers Lounge</title>
         @include('layouts.partials.favicon')
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=montserrat:400,500,600,700|cormorant-garamond:500,500i,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=dm-sans:400,500,600,700|playfair-display:500,600,700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/css/auth.css', 'resources/js/app.js'])
     </head>
     <body class="auth-page font-sans text-gray-900 antialiased">
-        <header class="auth-header"><a href="{{ url('/') }}" class="auth-brand">LUNELLE <small>AESTHETICS</small></a><a href="{{ url('/') }}">&#8592; Back to home</a></header>
+        <header class="auth-header"><a href="{{ url('/') }}" class="auth-brand" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a><a href="{{ url('/') }}">&#8592; Back to home</a></header>
         <main class="auth-layout">
         <aside class="auth-story">
             <img src="{{ asset('images/spa-ritual.jpg') }}" alt="Skincare essentials, soft towels, and pink tulips" width="1200" height="800">
@@ -24,11 +24,11 @@
         </aside>
         <section class="auth-form-area" aria-label="Account access">
         <div class="auth-form-content">
-            <div class="auth-card">
+            <div class="auth-card"><a href="{{ url('/') }}" class="auth-form-logo" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a>
                 {{ $slot }}
             </div>
         </div>
-        <p class="auth-footer">A little care. A lovely glow. &#10022; Lunelle Aesthetics</p>
+        <p class="auth-footer">A little care. A lovely glow. &#10022; Shafer's Skin Lovers Lounge</p>
         </section>
         </main>
     </body>

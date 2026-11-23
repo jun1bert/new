@@ -1,4 +1,4 @@
-@php
+﻿@php
         $calendarBookings = $appointments->mapWithKeys(function ($booking) {
             $minutes = $booking->duration_minutes ?? $booking->booked_services->sum(fn ($service) => max(1, (int) ($service->duration ?: 60)));
             return [$booking->id => [
@@ -31,7 +31,7 @@
                 </form>
             </div>
             <div class="calendar-legend"><span><i class="calendar-dot scheduled"></i>Scheduled</span><span><i class="calendar-dot pending"></i>Pending</span><span><i class="calendar-dot completed"></i>Completed</span><span><i class="calendar-dot cancelled"></i>Cancelled / no-show</span><span class="calendar-legend-help">Select an appointment for details</span></div>
-            @if($hours === null)<p class="calendar-hours-note">Business hours not set. An administrator can configure them from Sessions.</p>@endif
+            @if($hours === null)<p class="calendar-hours-note">Business hours not set. An administrator can configure them in Settings.</p>@endif
             <div class="calendar-board {{ $mode === 'week' ? 'calendar-board-week' : 'calendar-board-day' }}">
                 @foreach($days as $day)
                     @php($dayBookings = $appointments->filter(fn ($booking) => $booking->scheduled_at->copy()->timezone('Asia/Manila')->toDateString() === $day->toDateString()))
@@ -61,11 +61,12 @@
         </section>
         <x-calendar-dialog name="calendar-appointment" maxWidth="md" focusable>
             <section class="p-6" role="dialog" aria-modal="true" aria-labelledby="calendar-detail-title">
-                <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-wider text-[#713b51]" x-text="selected().statusLabel"></p><h3 id="calendar-detail-title" class="mt-1 font-serif text-2xl text-[#35232d]" x-text="selected().name"></h3></div><x-modal-close x-on:click="$dispatch('close-modal', 'calendar-appointment')" label="Close appointment details" /></div>
-                <p class="mt-4 text-sm font-semibold" x-text="selected().services"></p><p class="mt-2 text-sm text-[#786570]" x-text="selected().time"></p><p class="mt-2 text-sm text-[#786570]"><span x-text="selected().minutes"></span> minutes &middot; <span x-text="selected().provider"></span></p>
-                <a :href="selected().manageUrl" class="mt-5 inline-block text-sm font-semibold text-[#713b51] underline">Manage session &rarr;</a>
+                <div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-wider text-[var(--brand-moss)]" x-text="selected().statusLabel"></p><h3 id="calendar-detail-title" class="mt-1 font-serif text-2xl text-[var(--brand-forest)]" x-text="selected().name"></h3></div><x-modal-close x-on:click="$dispatch('close-modal', 'calendar-appointment')" label="Close appointment details" /></div>
+                <p class="mt-4 text-sm font-semibold" x-text="selected().services"></p><p class="mt-2 text-sm text-[var(--brand-text-muted)]" x-text="selected().time"></p><p class="mt-2 text-sm text-[var(--brand-text-muted)]"><span x-text="selected().minutes"></span> minutes &middot; <span x-text="selected().provider"></span></p>
+                <a :href="selected().manageUrl" class="mt-5 inline-block text-sm font-semibold text-[var(--brand-moss)] underline">Manage session &rarr;</a>
             </section>
         </x-calendar-dialog>
 
     </div>
+
 

@@ -1,8 +1,8 @@
-# Appointment scheduling
+﻿# Appointment scheduling
 
 Open the staff **Dashboard** for the day or week calendar. Dates and hours use Philippine time. Filter by treatment provider or use **Add / manage** to schedule and approve bookings. The former `/studio/calendar` URL redirects to the dashboard calendar; there is one calendar workspace.
 
-The dashboard calendar is an overview. Provider assignment and other scheduling actions belong in **Sessions**. Administrators can configure studio business hours and weekly provider shifts under **Working hours** in Sessions. Unchecked days are unavailable. A provider without a saved shift uses studio hours. Studio hours initially remain unset so installing the feature does not invent business hours. Once saved, the full appointment must fit within both schedules. Changes do not move or cancel existing bookings.
+The dashboard calendar is an overview. Provider assignment and other scheduling actions belong in **Sessions**. Administrators can configure studio business hours and weekly provider shifts under **Working hours** in Settings. Unchecked days are unavailable. A provider without a saved shift uses studio hours. Studio hours initially remain unset so installing the feature does not invent business hours. Once saved, the full appointment must fit within both schedules. Changes do not move or cancel existing bookings.
 
 New scheduled appointments have a separate treatment provider; the original `staff_id` still records the booking operator. Choose the provider when scheduling, approving, or creating a follow-up. The default is the current operator for first sessions and approvals, and the previous provider for follow-ups. Providers must be active staff. Administrators manage bookings but must select a staff member as provider. If a provider becomes an administrator or is deactivated, pending and scheduled assignments are cleared; completed history is retained. Use **Assign treatment provider** or **Change treatment provider** on a scheduled session in Sessions.
 
@@ -21,3 +21,4 @@ In **Sessions**, use **Reschedule** on a scheduled, cancelled, or missed session
 **Cancel session** accepts pending or scheduled appointments and requires a reason. **Mark no-show** is available for scheduled appointments once their start time has passed, and also requires a reason. Cancelled and missed sessions do not reserve provider/client capacity and do not create payments or stock deductions. Completed sessions cannot be changed through these controls. Pending requests must be approved before rescheduling; they can be cancelled directly.
 
 **Session history** shows who changed the booking, when, the reason, and previous/new times, providers, or statuses. Tracking starts when this migration is installed; earlier changes are not reconstructed. Creation, approval, decline, completion, reassignment, rescheduling, cancellation, and no-show updates are tracked. Members can see updated appointment dates/statuses but only the studio team can use these management actions. The dashboard and reports include cancelled and no-show statuses.
+

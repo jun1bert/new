@@ -1,0 +1,5 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Shafer's image placeholder</title><desc id="desc">A sage and cream placeholder for studio photography</desc>
+  <rect width="1200" height="900" fill="#F3EDE0"/><path d="M-80 720C190 510 360 900 635 660S1030 330 1280 500" fill="none" stroke="#8A9678" stroke-width="2" opacity=".65"/><path d="M-70 760C190 550 420 930 690 700S1030 390 1270 555" fill="none" stroke="#4A5F42" stroke-width="1.5" opacity=".38"/><circle cx="990" cy="172" r="106" fill="#FFFFFF" opacity=".82"/>
+  <text x="600" y="425" text-anchor="middle" fill="#263C32" font-family="Georgia, serif" font-size="52" letter-spacing="7">SHAFER'S</text><text x="600" y="476" text-anchor="middle" fill="#4A5F42" font-family="Arial, sans-serif" font-size="20" letter-spacing="5">IMAGE COMING SOON</text>
+</svg>

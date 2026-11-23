@@ -1,15 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Treatment consent | Lunelle Aesthetics</title>
+    <title>Treatment consent | Shafer's Skin Lovers Lounge</title>
     @include('layouts.partials.favicon')
-    <link href="https://fonts.bunny.net/css?family=montserrat:400,500,600|cormorant-garamond:500,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=dm-sans:400,500,600,700|playfair-display:500,600,700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/css/portal.css', 'resources/js/app.js'])
 </head>
 <body class="consent-tablet">
-    <header class="tablet-header"><p>LUNELLE <span>AESTHETICS</span></p><span class="consent-badge">In-studio consent</span></header>
+    <header class="tablet-header"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge" style="width: 150px; max-width: 50%; height: auto;"><span class="consent-badge">In-studio consent</span></header>
     <main class="consent-workspace mx-auto max-w-3xl space-y-5 px-4 py-6 sm:px-6 sm:py-10">
         @if($appointment && $appointment->user_id === session('consent_tablet.client_id') && $appointment->consentForm)
             <section class="consent-panel tablet-complete" role="status">
@@ -47,7 +47,8 @@
                 <button class="consent-secondary w-full">Unlock management</button>
             </form>
         </details>
-        <p class="consent-muted text-center text-sm">Your moment of care, at Lunelle.</p>
+        <p class="consent-muted text-center text-sm">Your moment of care, at Shafer's.</p>
     </main>
 </body>
 </html>
+

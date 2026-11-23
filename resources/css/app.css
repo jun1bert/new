@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --brand-forest: #263C32;
+    --brand-moss: #4A5F42;
+    --brand-sage: #8A9678;
+    --brand-terracotta: #D6784F;
+    --brand-brown: #5D361F;
+    --brand-orange: #B7511B;
+    --brand-cream: #F3EDE0;
+    --brand-border: #C7CBC1;
+    --brand-neutral: #E7E9E1;
+    --brand-white: #FFFFFF;
+    --brand-gold: #E7D57B;
+    --brand-peach: #E6B8A1;
+    --brand-gray: #999999;
+    --brand-text-muted: #526056;
+}
+
 [x-cloak] {
     display: none !important;
 }

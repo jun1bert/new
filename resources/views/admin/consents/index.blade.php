@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header"><div><p class="consent-eyebrow">Administration</p><h2 class="mt-2 font-serif text-3xl text-[#35232d]">Consent forms</h2></div></x-slot>
+    <x-slot name="header"><div><p class="consent-eyebrow">Administration</p><h2 class="mt-2 font-serif text-3xl text-[var(--brand-forest)]">Consent forms</h2></div></x-slot>
     <div class="consent-workspace mx-auto max-w-5xl space-y-5 px-4 py-8 sm:px-6">
         <section class="consent-panel">
             <p class="consent-eyebrow">Care begins with understanding</p>

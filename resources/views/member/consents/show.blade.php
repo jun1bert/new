@@ -4,7 +4,7 @@
         <div class="consent-actions consent-no-print"><a class="consent-link" href="{{ in_array(auth()->user()->user_type, ['staff', 'administrator'], true) ? route('studio.clients.show', $consent->client) : ($consent->appointment ? route('member.appointments.show', $consent->appointment) : route('dashboard')) }}">&larr; Back to {{ in_array(auth()->user()->user_type, ['staff', 'administrator'], true) ? 'client record' : 'appointment' }}</a><button type="button" onclick="window.print()" class="consent-secondary">Print / save PDF</button></div>
         @if(session('status'))<p role="status" class="consent-notice consent-no-print">{{ session('status') }}</p>@endif
         <article class="consent-panel">
-            <p class="consent-eyebrow">Lunelle Aesthetics · Signed record #{{ $consent->id }}</p>
+            <p class="consent-eyebrow">Shafer's Skin Lovers Lounge · Signed record #{{ $consent->id }}</p>
             <h1 class="mt-2 font-serif text-3xl">{{ $consent->service_name ?? $consent->service->name }}</h1>
             <p class="consent-muted mt-3">Client: {{ $consent->client->name }}</p>
             @if($consent->content_snapshot)

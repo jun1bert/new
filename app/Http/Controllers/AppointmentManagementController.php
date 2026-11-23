@@ -6,6 +6,7 @@ use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Payment;
+use App\Models\TreatmentInvoice;
 use App\Models\Product;
 use App\Models\PaymentItem;
 use App\Models\InventoryMovement;
@@ -26,7 +27,7 @@ class AppointmentManagementController extends Controller
         $filters = $request->validate(['status' => ['nullable', 'in:pending,scheduled,completed,declined,cancelled,no_show'], 'appointment_id' => ['nullable', 'integer', 'exists:appointments,id']]);
         $status = $filters['status'] ?? null;
         $search = $request->string('search')->trim()->toString();
-        $baseQuery = Appointment::query()->with(['client', 'service', 'services', 'staff', 'provider', 'payment', 'supplyUsages.product', 'consentForm', 'changeHistory.actor', 'courseSessions']);
+        $baseQuery = Appointment::query()->with(['client', 'service', 'services', 'staff', 'provider', 'payment', 'invoice', 'supplyUsages.product', 'consentForm', 'changeHistory.actor', 'courseSessions']);
         $nextSourceId = session('schedule_next_appointment_id') ?? ($request->session()->has('errors') ? old('_next_session_appointment_id') : null);
         $nextSessionSource = $nextSourceId ? Appointment::with(['client', 'service', 'services', 'provider'])->where('status', 'completed')->find($nextSourceId) : null;
         if ($nextSessionSource && !$nextSessionSource->can_schedule_next) {
@@ -49,7 +50,7 @@ class AppointmentManagementController extends Controller
             'nextSessionSource' => $nextSessionSource,
             'hours' => json_decode(DB::table('scheduling_settings')->where('id', 1)->value('hours') ?? 'null', true),
             'shifts' => DB::table('staff_schedules')->get()->keyBy('user_id'),
-            'providers' => User::where('is_active', true)->where('user_type', 'staff')->orderBy('name')->get(),
+            'providers' => User::where('is_active', true)->where('user_type', 'staff')->withExists(['attendances as currently_timed_in' => fn ($q) => $q->whereNull('clocked_out_at')])->orderBy('name')->get(),
             'search' => $search,
             'statusCounts' => Appointment::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status'),
             'members' => User::where('user_type', 'member')->orderBy('name')->get(),
@@ -122,7 +123,8 @@ class AppointmentManagementController extends Controller
         abort_unless($appointment->status === 'scheduled', 422);
 
         $data = request()->validate([
-            'amount' => ['required', 'numeric', 'min:0'],
+            'amount' => ['required', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],
+            'sales_staff_id' => ['nullable', Rule::exists('users', 'id')->where('user_type', 'staff')->where('is_active', true)],
             'discount_amount' => ['nullable', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],
             'discount_reason' => ['nullable', 'string', 'max:255'],
             'method' => ['required', 'in:cash,gcash,card,bank_transfer,other'],
@@ -136,6 +138,8 @@ class AppointmentManagementController extends Controller
         ]);
 
         DB::transaction(function () use ($appointment, $data) {
+            // Lock the first course session to serialize all payments and completions.
+            $first = Appointment::where('treatment_course_id', $appointment->treatment_course_id)->orderBy('session_number')->lockForUpdate()->firstOrFail();
             $lockedAppointment = Appointment::whereKey($appointment->id)->lockForUpdate()->firstOrFail();
             abort_unless($lockedAppointment->status === 'scheduled', 422, 'This session has already been completed.');
             if ($lockedAppointment->booked_services->contains(fn ($service) => $service->requires_consent) && !$lockedAppointment->consentForm) {
@@ -154,13 +158,22 @@ class AppointmentManagementController extends Controller
                     }
                 }
             }
-            $serviceIds = $lockedAppointment->booked_services->pluck('id');
-            $chargedServices = Service::whereIn('id', $serviceIds)->orderBy('id')->lockForUpdate()->get();
-            $totalCents = $chargedServices->sum(fn ($service) => (int) round((float) $service->price * 100));
-            foreach ($data['products'] ?? [] as $item) {
-                $totalCents += (int) round((float) $inventory->get($item['id'])->selling_price * 100) * (int) $item['quantity'];
+            $invoice = TreatmentInvoice::where('treatment_course_id', $appointment->treatment_course_id)->lockForUpdate()->first();
+            if (! $invoice && Payment::whereHas('appointment', fn ($q) => $q->where('treatment_course_id', $appointment->treatment_course_id))->exists()) {
+                throw ValidationException::withMessages(['amount' => 'This course has older payments. Ask the owner to review it before recording a package balance.']);
             }
-            if ($totalCents > 9999999999) {
+            $serviceIds = $first->booked_services->pluck('id');
+            $chargedServices = Service::whereIn('id', $serviceIds)->orderBy('id')->lockForUpdate()->get();
+            $newInvoice = ! $invoice;
+            if ($newInvoice) {
+                $invoice = TreatmentInvoice::create(['treatment_course_id' => $appointment->treatment_course_id, 'total' => number_format($chargedServices->sum(fn ($service) => (int) round((float) $service->price * 100)) / 100, 2, '.', '')]);
+            }
+            $retailCents = 0;
+            foreach ($data['products'] ?? [] as $item) {
+                $retailCents += (int) round((float) $inventory->get($item['id'])->selling_price * 100) * (int) $item['quantity'];
+            }
+            $totalCents = $invoice->balance_cents + $retailCents;
+            if ($totalCents > 9999999999 || (int) round((float) $invoice->total * 100) + $retailCents > 9999999999) {
                 throw ValidationException::withMessages(['amount' => 'The total exceeds the maximum payment amount.']);
             }
             $discountCents = (int) round((float) ($data['discount_amount'] ?? 0) * 100);
@@ -168,14 +181,19 @@ class AppointmentManagementController extends Controller
                 throw ValidationException::withMessages(['discount_amount' => 'The discount cannot exceed the service and retail total.']);
             }
             $totalCents -= $discountCents;
+            $amountCents = (int) round((float) $data['amount'] * 100);
+            if ($amountCents > $totalCents) {
+                throw ValidationException::withMessages(['amount' => 'Payment cannot exceed the remaining balance.']);
+            }
+            $invoice->update(['total' => number_format(((int) round((float) $invoice->total * 100) + $retailCents - $discountCents) / 100, 2, '.', '')]);
             $payment = Payment::create([
                 'discount_amount' => number_format($discountCents / 100, 2, '.', ''),
                 'discount_reason' => $discountCents > 0 ? ($data['discount_reason'] ?? null) : null,
-                'amount' => number_format($totalCents / 100, 2, '.', ''), 'method' => $data['method'], 'reference' => $data['reference'] ?? null,
-                'appointment_id' => $appointment->id, 'recorded_by' => request()->user()->id, 'paid_at' => now(),
+                'amount' => number_format($amountCents / 100, 2, '.', ''), 'treatment_invoice_id' => $invoice->id, 'method' => $data['method'], 'reference' => $data['reference'] ?? null,
+                'appointment_id' => $appointment->id, 'recorded_by' => request()->user()->id, 'sales_staff_id' => $data['sales_staff_id'] ?? null, 'paid_at' => now(),
             ]);
             $payment->update(['receipt_number' => 'LNL-'.now()->format('Ymd').'-'.str_pad((string) $payment->id, 5, '0', STR_PAD_LEFT)]);
-            foreach ($chargedServices as $service) {
+            foreach ($newInvoice ? $chargedServices : [] as $service) {
                 PaymentItem::create(['payment_id' => $payment->id, 'description' => $service->name, 'quantity' => 1, 'unit_price' => $service->price]);
             }
             foreach (['products' => 'sale', 'supplies' => 'treatment_usage'] as $group => $movementType) {
@@ -208,6 +226,45 @@ class AppointmentManagementController extends Controller
         return view('studio.payments.receipt', [
             'payment' => $payment->load(['appointment.client', 'appointment.service', 'appointment.services', 'appointment.supplyUsages.product', 'recorder', 'items']),
         ]);
+    }
+
+    public function payBalance(Request $request, Appointment $appointment): RedirectResponse
+    {
+        $data = $request->validate([
+            'amount' => ['required', 'numeric', 'gt:0', 'max:99999999.99', 'decimal:0,2'],
+            'method' => ['required', 'in:cash,gcash,card,bank_transfer,other'],
+            'reference' => ['nullable', 'string', 'max:120'],
+            'sales_staff_id' => ['nullable', Rule::exists('users', 'id')->where('user_type', 'staff')->where('is_active', true)],
+        ]);
+        DB::transaction(function () use ($appointment, $data, $request) {
+            Appointment::where('treatment_course_id', $appointment->treatment_course_id)->orderBy('session_number')->lockForUpdate()->firstOrFail();
+            $invoice = TreatmentInvoice::where('treatment_course_id', $appointment->treatment_course_id)->lockForUpdate()->firstOrFail();
+            if ((int) round((float) $data['amount'] * 100) > $invoice->balance_cents) {
+                throw ValidationException::withMessages(['amount' => 'Payment cannot exceed the remaining balance.']);
+            }
+            $payment = Payment::create([
+                'appointment_id' => $appointment->id, 'treatment_invoice_id' => $invoice->id,
+                'recorded_by' => $request->user()->id, 'sales_staff_id' => $data['sales_staff_id'] ?? null,
+                'amount' => $data['amount'], 'method' => $data['method'], 'reference' => $data['reference'] ?? null, 'paid_at' => now(),
+            ]);
+            $payment->update(['receipt_number' => 'LNL-'.now()->format('Ymd').'-'.str_pad((string) $payment->id, 5, '0', STR_PAD_LEFT)]);
+        });
+        return back()->with('status', 'Payment recorded.');
+    }
+
+    public function reviewLegacyBalance(Request $request, Appointment $appointment): RedirectResponse
+    {
+        $data = $request->validate([
+            'total' => ['required', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],
+            'opening_credit' => ['required', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2', 'lte:total'],
+        ]);
+        DB::transaction(function () use ($appointment, $data) {
+            Appointment::where('treatment_course_id', $appointment->treatment_course_id)->orderBy('session_number')->lockForUpdate()->firstOrFail();
+            abort_if(TreatmentInvoice::where('treatment_course_id', $appointment->treatment_course_id)->exists(), 422);
+            abort_unless(Payment::whereHas('appointment', fn ($q) => $q->where('treatment_course_id', $appointment->treatment_course_id))->exists(), 422);
+            TreatmentInvoice::create(['treatment_course_id' => $appointment->treatment_course_id, 'total' => $data['total'], 'opening_credit' => $data['opening_credit'], 'reviewed_by' => auth()->id()]);
+        });
+        return back()->with('status', 'Existing course balance recorded.');
     }
 
     public function accept(Appointment $appointment): RedirectResponse
@@ -291,3 +348,4 @@ class AppointmentManagementController extends Controller
         return $scheduledAt;
     }
 }
+

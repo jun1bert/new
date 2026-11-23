@@ -32,7 +32,7 @@ class TreatmentSuppliesTest extends TestCase
         $supply = $this->product('supply');
         $retail = $this->product('retail');
         $this->get('/studio/appointments')->assertOk()->assertSee('Items used in treatment')->assertSee('Treatment serum');
-        $payload = ['amount' => 100, 'method' => 'cash', 'products' => [['id' => $retail->id, 'quantity' => 1]], 'supplies' => [['id' => $supply->id, 'quantity' => 0.25]]];
+        $payload = ['amount' => 150, 'method' => 'cash', 'products' => [['id' => $retail->id, 'quantity' => 1]], 'supplies' => [['id' => $supply->id, 'quantity' => 0.25]]];
         $this->patch(route('studio.appointments.complete', $session), $payload)->assertSessionHasNoErrors()->assertRedirect();
         $this->assertSame('completed', $session->fresh()->status);
         $this->assertEquals(9.75, $supply->fresh()->stock_quantity);
@@ -58,11 +58,11 @@ class TreatmentSuppliesTest extends TestCase
         $session = $this->treatmentSession();
         $retail = $this->product('retail');
         $retail->update(['selling_price' => 150]);
-        $this->patch(route('studio.appointments.complete', $session), ['amount' => 100, 'method' => 'cash', 'products' => [['id' => $retail->id, 'quantity' => 10]]])->assertSessionHasNoErrors();
+        $this->patch(route('studio.appointments.complete', $session), ['amount' => 1600, 'method' => 'cash', 'products' => [['id' => $retail->id, 'quantity' => 10]]])->assertSessionHasNoErrors();
         $payment = $session->fresh()->payment;
         $this->assertSame('1600.00', $payment->amount);
         $this->get(route('studio.payments.receipt', $payment))->assertOk()->assertSee('PHP 1,600.00')->assertDontSee('recorded payment differs')->assertDontSee('Treatment supplies used');
-        $payment->update(['amount' => 100]);
+        $payment->update(['amount' => 100, 'treatment_invoice_id' => null]);
         $this->get(route('studio.payments.receipt', $payment))->assertOk()->assertSee('Item total')->assertSee('PHP 1,600.00')->assertSee('PHP 100.00')->assertSee('recorded payment differs');
         $this->assertSame('100.00', $payment->fresh()->amount);
     }
@@ -87,14 +87,14 @@ class TreatmentSuppliesTest extends TestCase
         $session = $this->treatmentSession();
         $retail = $this->product('retail');
         $this->patch(route('studio.appointments.complete', $session), [
-            'amount' => 1, 'method' => 'cash', 'discount_amount' => '25.50',
+            'amount' => 174.50, 'method' => 'cash', 'discount_amount' => '25.50',
             'discount_reason' => 'Loyalty reward', 'products' => [['id' => $retail->id, 'quantity' => 2]],
         ])->assertSessionHasNoErrors();
         $payment = $session->fresh()->payment;
         $this->assertSame('174.50', $payment->amount);
         $this->assertSame('25.50', $payment->discount_amount);
         $this->get(route('studio.payments.receipt', $payment))->assertOk()
-            ->assertSee('Subtotal')->assertSee('PHP 200.00')->assertSee('Loyalty reward')
+            ->assertSee('New items subtotal')->assertSee('PHP 200.00')->assertSee('Loyalty reward')
             ->assertSee('-PHP 25.50')->assertSee('PHP 174.50')->assertDontSee('recorded payment differs');
     }
 
@@ -129,3 +129,4 @@ class TreatmentSuppliesTest extends TestCase
         $this->assertDatabaseCount('payments', 0);
     }
 }
+

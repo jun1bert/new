@@ -33,6 +33,8 @@ Route::get('/', function () {
     return view('welcome', compact('galleryImages'));
 });
 Route::post('/appointments/request', [PublicBookingController::class, 'store'])->middleware('throttle:10,1')->name('appointments.request');
+Route::get('/attendance/scan', [\App\Http\Controllers\AttendanceQrController::class, 'scan'])->middleware('throttle:30,1')->name('attendance.qr.scan');
+Route::get('/attendance/confirm', [\App\Http\Controllers\AttendanceQrController::class, 'confirm'])->middleware(['auth', 'verified'])->name('attendance.qr.confirm');
 
 Route::get('/dashboard', PortalController::class)
     ->middleware(['auth', 'verified'])
@@ -48,9 +50,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/claim-past-appointment', [ClientClaimController::class, 'store'])->middleware('throttle:5,1')->name('claims.store');
     Route::get('/my-appointments/{appointment}', [MemberAppointmentController::class, 'show'])->name('member.appointments.show');
     Route::get('/my-appointments/{appointment}/receipt', [MemberAppointmentController::class, 'receipt'])->name('member.appointments.receipt');
+    Route::get('/my-payments/{payment}/receipt', [MemberAppointmentController::class, 'paymentReceipt'])->name('member.payments.receipt');
 });
 
 Route::middleware(['auth', 'verified', 'administrator'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/attendance', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/attendance/qr', [\App\Http\Controllers\AttendanceQrController::class, 'display'])->name('attendance.qr.display');
+    Route::get('/attendance/qr/current', [\App\Http\Controllers\AttendanceQrController::class, 'current'])->name('attendance.qr.current');
+    Route::post('/attendance/corrections', [\App\Http\Controllers\AttendanceController::class, 'storeCorrection'])->name('attendance.corrections.store');
+    Route::patch('/attendance/{attendance}/correction', [\App\Http\Controllers\AttendanceController::class, 'updateCorrection'])->name('attendance.corrections.update');
+    Route::get('/settings', [\App\Http\Controllers\SchedulingController::class, 'settings'])->name('settings.index');
+    Route::post('/appointments/{appointment}/services/{service}/skin-analysis', [\App\Http\Controllers\SkinAnalysisPhotoController::class, 'store'])->name('skin-analysis.store');
+    Route::get('/skin-analysis/{photo}', [\App\Http\Controllers\SkinAnalysisPhotoController::class, 'show'])->name('skin-analysis.show');
+    Route::delete('/skin-analysis/{photo}', [\App\Http\Controllers\SkinAnalysisPhotoController::class, 'destroy'])->name('skin-analysis.destroy');
+    Route::post('/appointments/{appointment}/review-legacy-balance', [AppointmentManagementController::class, 'reviewLegacyBalance'])->name('appointments.review-legacy-balance');
     Route::put('/scheduling/hours', [\App\Http\Controllers\SchedulingController::class, 'updateHours'])->name('scheduling.hours');
     Route::get('/reports', BusinessReportController::class)->name('reports.index');
     Route::get('/consent-forms', [ConsentController::class, 'index'])->name('consents.index');
@@ -74,6 +87,8 @@ Route::middleware(['auth', 'verified', 'administrator'])->prefix('admin')->name(
 });
 
 Route::middleware(['auth', 'verified', 'studio-team'])->prefix('studio')->name('studio.')->group(function () {
+    Route::post('/attendance/time-in', [\App\Http\Controllers\AttendanceController::class, 'clockIn'])->name('attendance.in');
+    Route::post('/attendance/time-out', [\App\Http\Controllers\AttendanceController::class, 'clockOut'])->name('attendance.out');
     Route::get('/appointment-availability', [\App\Http\Controllers\SchedulingController::class, 'availability'])->name('appointments.availability');
     Route::get('/calendar', [\App\Http\Controllers\SchedulingController::class, 'index'])->name('calendar');
     Route::patch('/appointments/{appointment}/provider', [\App\Http\Controllers\SchedulingController::class, 'assign'])->name('appointments.provider');
@@ -91,6 +106,7 @@ Route::middleware(['auth', 'verified', 'studio-team'])->prefix('studio')->name('
     Route::patch('/appointments/{appointment}/accept', [AppointmentManagementController::class, 'accept'])->name('appointments.accept');
     Route::patch('/appointments/{appointment}/decline', [AppointmentManagementController::class, 'decline'])->name('appointments.decline');
     Route::patch('/appointments/{appointment}/complete', [AppointmentManagementController::class, 'complete'])->name('appointments.complete');
+    Route::post('/appointments/{appointment}/balance-payments', [AppointmentManagementController::class, 'payBalance'])->name('appointments.balance-payments');
     Route::get('/payments/{payment}/receipt', [AppointmentManagementController::class, 'receipt'])->name('payments.receipt');
     Route::post('/appointments/{appointment}/next-session', [AppointmentManagementController::class, 'scheduleNext'])->name('appointments.next-session');
     Route::get('/gallery', [GalleryManagementController::class, 'index'])->name('gallery.index');
@@ -100,3 +116,4 @@ Route::middleware(['auth', 'verified', 'studio-team'])->prefix('studio')->name('
 });
 
 require __DIR__.'/auth.php';
+

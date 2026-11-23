@@ -18,7 +18,7 @@ class AppointmentScheduler
         $providerHours = DB::table('staff_schedules')->where('user_id', $providerId)->value('hours');
         if ($studioHours !== null && !(json_decode($studioHours, true)[$day->dayOfWeek] ?? null)) {
             return ['slots' => [], 'duration' => $duration, 'hoursConfigured' => true,
-                'message' => 'The studio is closed on '.$day->format('l, M j').'. Choose another date. Administrators can update Working hours in Sessions.'];
+                'message' => 'The studio is closed on '.$day->format('l, M j').'. Choose another date. Administrators can update Working hours in Settings.'];
         }
         if ($providerHours !== null && !(json_decode($providerHours, true)[$day->dayOfWeek] ?? null)) {
             return ['slots' => [], 'duration' => $duration, 'hoursConfigured' => $studioHours !== null,
@@ -93,3 +93,4 @@ class AppointmentScheduler
         }
     }
 }
+

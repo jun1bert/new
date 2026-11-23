@@ -1,4 +1,4 @@
-@php
+﻿@php
     // These samples keep the landing page complete until the administrator creates its first service.
     $sampleServices = collect([
         ['id' => 1, 'name' => 'Classic Manicure', 'category' => 'Nail Care', 'duration' => 60, 'price' => 450, 'session_count' => 1, 'requires_consent' => false, 'description' => 'Detailed cuticle care, shaping, and a polished finish.'],
@@ -37,16 +37,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lunelle Aesthetics</title>
+    <title>Shafer's Skin Lovers Lounge</title>
 
     @include('layouts.partials.favicon')
 
-    <meta name="description" content="Discover Lunelle Aesthetics. Explore skin, body, and beauty services and request your next appointment online.">
+    <meta name="description" content="Discover Shafer's Skin Lovers Lounge. Explore skin, body, and beauty services and request your next appointment online.">
     @vite(['resources/css/app.css', 'resources/css/landing.css', 'resources/js/app.js'])
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         @font-face {
@@ -58,17 +58,17 @@
         }
 
         :root {
-            --desert-rock: #8d6c5a;
-            --soft-sandstone: #c4a995;
-            --creamed-oat: #e9ddd2;
-            --porcelain-mist: #f4efeb;
-            --feather-white: #fffdfb;
-            --ink: #302825;
-            --muted: #756862;
+            --desert-rock: var(--brand-moss);
+            --soft-sandstone: var(--brand-sage);
+            --creamed-oat: var(--brand-neutral);
+            --porcelain-mist: var(--brand-neutral);
+            --feather-white: var(--brand-white);
+            --ink: var(--brand-forest);
+            --muted: var(--brand-text-muted);
         }
 
         body {
-            font-family: 'Montserrat', Arial, sans-serif;
+            font-family: 'DM Sans', Arial, sans-serif;
             font-weight: 600;
             isolation: isolate;
             background: #f7f3f0;
@@ -87,7 +87,7 @@
         }
 
         h1, h2, h3 {
-            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-family: 'Playfair Display', Georgia, serif;
             font-weight: 600;
             letter-spacing: .015em;
         }
@@ -105,18 +105,18 @@
         }
 
         .warm-panel {
-            background: #fffdfb;
+            background: var(--brand-white);
             border: 1px solid rgba(141,108,90,.18);
             box-shadow: 0 20px 56px rgba(48,40,37,.08);
         }
 
         .contact-panel {
-            font-family: 'Montserrat', Arial, sans-serif;
+            font-family: 'DM Sans', Arial, sans-serif;
             font-weight: 400;
         }
 
         .contact-panel h2 {
-            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-family: 'Playfair Display', Georgia, serif;
         }
 
         .cursive-accent { font-family: 'Priestacy', "Segoe Script", cursive; font-weight: 400; letter-spacing: .01em; }
@@ -195,7 +195,7 @@
         .hero-layout { min-height: calc(86svh - 7rem); display: grid; align-items: center; gap: 3rem; }
         .hero-visual { min-height: 0; }
         @media (min-width: 1024px) { .hero-layout { grid-template-columns: minmax(0, 1fr) minmax(320px, .72fr); } .hero-visual { min-height: 500px; } }
-        .hero-cursive-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(3.5rem, 7vw, 6.5rem); font-weight: 500; line-height: .9; letter-spacing: -.035em; }
+        .hero-cursive-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(3.5rem, 7vw, 6.5rem); font-weight: 500; line-height: .9; letter-spacing: -.035em; }
         .hero-cursive-tail { color: var(--desert-rock); font-style: italic; }
         .section-band { background: #f0e7e1; border-block-color: rgba(141,108,90,.12); }
         #services, #gallery { position: relative; }
@@ -443,10 +443,7 @@
 {{-- Header --}}
 <header class="fixed top-0 z-50 w-full border-b border-[var(--desert-rock)]/25 bg-[var(--porcelain-mist)]/92 shadow-[0_8px_30px_rgba(77,64,55,.08)] backdrop-blur-xl">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-10 py-3">
-        <a href="#top" class="min-w-0 text-center sm:text-left" aria-label="Lunelle Aesthetics home">
-            <span class="block font-serif text-2xl tracking-[.16em] text-[var(--ink)] sm:text-3xl">LUNELLE</span>
-            <span class="block text-[8px] font-bold tracking-[.34em] text-[var(--desert-rock)] sm:text-[9px]">AESTHETICS</span>
-        </a>
+        <a href="#top" class="landing-brand-logo" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a>
 
         <nav class="flex items-center justify-end gap-3 sm:gap-6 text-[11px] sm:text-sm">
             <a href="#about" class="hidden whitespace-nowrap text-[var(--ink)] transition hover:text-[var(--desert-rock)] sm:inline">About</a>
@@ -464,7 +461,7 @@
             </a>
         </nav>
     </div>
-    <nav class="landing-mobile-nav" aria-label="Explore Lunelle">
+    <nav class="landing-mobile-nav" aria-label="Explore Shafer's">
         <a href="#about">About</a><a href="#services">Services</a><a href="#gallery">Gallery</a><a href="#location">Location</a>
     </nav>
 </header>
@@ -475,43 +472,48 @@
 @endphp
 <section class="hero-media relative min-h-[86vh] px-4 pt-28 sm:pt-32"
          style="--hero-image: url('{{ $heroImage }}');">
+    <div class="hero-shape hero-shape-forest" aria-hidden="true"></div><div class="hero-shape hero-shape-sage" aria-hidden="true"></div><div class="hero-shape hero-shape-clay" aria-hidden="true"></div>
     <div class="hero-layout mx-auto max-w-7xl">
         <div class="hero-copy max-w-2xl py-12 text-[var(--ink)] sm:py-16">
             <p class="text-[10px] sm:text-xs tracking-[0.28em] uppercase text-[var(--desert-rock)]">
-                Beauty · Wellness · Self-care
+                SKIN LOVERS LOUNGE · YOUR MOMENT OF CARE
             </p>
             <h1 class="hero-cursive-title mt-5 text-[var(--ink)]" style="text-shadow:none;-webkit-text-stroke:0">
-                <span class="block">A little care.</span>
-                <span class="hero-cursive-tail mt-1 block">A lovely glow.</span>
+                <span class="block">Feel good</span>
+                <span class="hero-cursive-tail mt-1 block">in your skin.</span>
             </h1>
             <p class="mt-6 max-w-xl text-sm leading-7 text-[var(--muted)] sm:text-base">
-                A contemporary sanctuary for thoughtful skin, body, and beauty rituals—designed around your own kind of glow.
+                Make space for yourself. Explore thoughtful skin, body, and beauty treatments, then find a time that works for you.
             </p>
 
-            <div class="mt-8 flex flex-wrap gap-3"><a href="#book" class="rounded-full bg-[var(--ink)] px-6 py-3 text-sm font-bold text-white transition hover:bg-[var(--desert-rock)]">Book an appointment</a><a href="#services" class="rounded-full border border-[var(--desert-rock)]/35 bg-white/60 px-6 py-3 text-sm font-bold text-[var(--ink)] backdrop-blur transition hover:bg-white">Explore services</a></div>
+            <div class="hero-actions mt-8 flex flex-wrap gap-3"><a href="#book" class="rounded-full bg-[var(--ink)] px-6 py-3 text-sm font-bold text-white transition hover:bg-[var(--desert-rock)]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path stroke-linecap="round" d="M7 3v4M17 3v4M3 10h18M8 14h1m3 0h1m-5 3h1m3 0h1"/></svg>Book an appointment</a><a href="#services" class="rounded-full border border-[var(--desert-rock)]/35 bg-white/60 px-6 py-3 text-sm font-bold text-[var(--ink)] backdrop-blur transition hover:bg-white">Explore services</a></div>
 
         </div>
 
         <div class="hero-visual">
+            <svg class="hero-leaves" viewBox="0 0 180 210" fill="none" aria-hidden="true"><path d="M90 203C102 142 91 75 68 26M91 143c-23-7-41-19-52-38m55 5c21-14 35-33 40-57" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M69 72C38 68 22 46 25 13c28 4 46 23 44 59ZM77 117C43 129 18 116 7 88c31-9 55 2 70 29Zm25-25c-2-32 15-57 45-64 4 28-12 51-45 64Zm-8 52c6-29 24-45 55-44-2 27-22 43-55 44Z" fill="currentColor" fill-opacity=".72"/><path d="M30 23 65 70M15 96l58 20m63-77-31 50m35 19-45 35" stroke="#c7d1b7" stroke-width="1.3" stroke-linecap="round"/></svg>
             <img src="{{ $heroImage }}" alt="An aesthetician gently applying a facial mask during a skincare treatment"
                  fetchpriority="high" width="1400" height="933" class="hero-photo">
-            <div class="hero-image-note"><span class="hero-note-mark" aria-hidden="true">L.</span><div><span class="eyebrow">THE LUNELLE MOMENT</span><p>Make a little time for yourself.</p></div></div>
+            <div class="hero-image-note"><img class="hero-note-logo" src="{{ asset('images/branding/shafers-logo.png') }}" alt="" aria-hidden="true"><div><span class="eyebrow">A MOMENT FOR YOU</span><p>Care for the skin you're in.</p></div></div>
         </div>
     </div>
 </section>
 
 {{-- Establishment preview --}}
-<div class="ritual-strip" aria-label="The Lunelle experience"><span>Beauty, at your pace</span><span aria-hidden="true">✦</span><span>Care that feels personal</span><span aria-hidden="true">✦</span><span>A moment, just for you</span></div>
+<div class="ritual-strip" aria-label="The Shafer's experience"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 20C6 20 3 16 3 11c5 0 8 3 9 9Zm0 0c6 0 9-4 9-9-5 0-8 3-9 9Zm0-2C8 14 8 9 12 4c4 5 4 10 0 14ZM5 21h14"/></svg>Beauty, at your pace</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 20C5 11 10 6 20 4c1 10-4 16-13 15M5 21c3-5 7-9 12-12"/></svg>Care that feels personal</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 21 4 13C-1 8 5 2 10 6l2 2 2-2c5-4 11 2 6 7l-8 8Z"/></svg>A moment, just for you</span></div>
 <section id="about" class="scroll-mt-20 px-4 py-8 sm:px-6 sm:py-10">
-    <div class="mx-auto mt-12 grid max-w-6xl gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-center"><div><p class="text-xs font-bold uppercase tracking-[.22em] text-[var(--desert-rock)]">Our philosophy</p><h2 class="mt-3 text-4xl leading-tight text-[var(--ink)]">Your moment to <em class="font-serif text-[var(--desert-rock)]">relax, refresh &amp; renew.</em></h2></div><div><p class="leading-7 text-[var(--muted)]">Lunelle brings together thoughtful beauty rituals and a tranquil, welcoming setting—so every visit feels personal, unhurried, and restorative.</p><div class="mt-6 grid gap-3 sm:grid-cols-3"><div class="rounded-xl bg-white/70 p-4 text-sm font-semibold text-[var(--ink)]">Professional care</div><div class="rounded-xl bg-white/70 p-4 text-sm font-semibold text-[var(--ink)]">Relaxing experience</div><div class="rounded-xl bg-white/70 p-4 text-sm font-semibold text-[var(--ink)]">Premium services</div></div></div></div>
+    <div class="about-story mx-auto max-w-7xl">
+        <div class="about-story-visual"><img src="{{ asset('images/spa-ritual.jpg') }}" alt="Skincare essentials, towels and flowers" loading="lazy"><span class="about-story-tag">A LITTLE TIME FOR YOU</span></div>
+        <div class="about-story-copy"><p class="eyebrow">OUR PHILOSOPHY</p><h2>Your moment to <em>relax, refresh &amp; renew.</em></h2><p>Shafer's brings together thoughtful beauty rituals and a tranquil, welcoming setting—so every visit feels personal, unhurried, and restorative.</p><div class="about-values"><span>Thoughtful care</span><span>Time to unwind</span><span>Made for you</span></div><a href="#services" class="about-story-link">Explore our treatments</a></div>
+    </div>
 </section>
 
 {{-- Services --}}
 <section id="services" class="section-band scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20">
     <div class="mb-10 text-center sm:mb-12">
         <p class="eyebrow mb-3">CARE, CHOSEN BY YOU</p>
-        <h2 class="section-heading">Find your <em>feel-good ritual.</em></h2>
-        <p class="text-[var(--muted)] mt-3 text-sm">Choose a category to find the treatment that fits your visit.</p>
+        <h2 class="section-heading">Care that fits <em>your moment.</em></h2>
+        <p class="text-[var(--muted)] mt-3 text-sm">Explore the treatments available for your next visit.</p>
     </div>
 
     @php
@@ -550,11 +552,16 @@
                         @foreach($categoryServices as $service)
                             <article class="service-luxe-card warm-panel flex min-h-[230px] flex-col rounded-2xl p-6">
                                 <div class="service-card-heading" aria-hidden="true">
-                                    <span class="service-ritual-mark"><svg viewBox="0 0 48 48" fill="none"><path d="M24 36C12 36 7 28 8 19c9 0 15 5 16 17Zm0 0c12 0 17-8 16-17-9 0-15 5-16 17Z" stroke="currentColor" stroke-width="1.3"/><path d="M24 32c-8-7-8-15 0-23 8 8 8 16 0 23Z" stroke="currentColor" stroke-width="1.3"/><path d="M14 40h20" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
                                     <span class="service-card-category">{{ $category }}</span>
-                                    <span class="service-card-number">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="service-card-logo"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="" loading="lazy"></span>
                                 </div>
                                 <div class="service-card-body flex flex-1 flex-col">
+                                <svg class="service-art" viewBox="0 0 160 170" fill="none" aria-hidden="true" focusable="false">
+                                    <path class="service-art-wash" d="M124 89c16 2 24 14 23 30-1 21-14 34-33 35-15 1-25-2-37 4-12 6-23 4-26-4-4-9 4-22 13-30 13-11 22-13 30-23 8-9 17-14 30-12Z"/>
+                                    <path class="service-art-profile" d="M112 21c-3 17-16 29-34 42-24 18-38 40-31 70 3-24 13-44 30-58 19-15 30-29 35-54Zm9 16c6 13 7 24 5 33-1 6 2 10 5 15 2 3 0 6-5 8-2 1-3 2-2 5 1 3-1 5-4 6 1 3-1 5-4 6-3 12-10 18-20 17-9-1-17-7-25-13m25-43c4 4 8 5 13 5m-15-15c4 0 8 1 11 4m-34 53c-7 8-10 16-11 25"/>
+                                    <path class="service-art-sparkle" d="M38 40c2 10 4 12 14 14-10 2-12 4-14 14-2-10-4-12-14-14 10-2 12-4 14-14ZM22 76c1 7 3 9 10 10-7 2-9 3-10 10-2-7-3-8-10-10 7-1 8-3 10-10Z"/>
+                                </svg>
+                                <svg class="service-card-sparkles" viewBox="0 0 75 56" aria-hidden="true" focusable="false"><path d="M17 4c1.5 7.5 3.5 9.5 11 11-7.5 1.5-9.5 3.5-11 11-1.5-7.5-3.5-9.5-11-11 7.5-1.5 9.5-3.5 11-11Zm38 22c1 5.5 2.5 7 8 8-5.5 1-7 2.5-8 8-1-5.5-2.5-7-8-8 5.5-1 7-2.5 8-8Z"/><circle cx="38" cy="43" r="2"/><circle cx="42" cy="8" r="1.5"/></svg>
                                 <div class="flex items-start justify-between gap-4">
                                     <h4 class="service-gold-text text-xl">{{ $service->name }}</h4>
                                     @if($service->requires_consent)
@@ -563,10 +570,10 @@
                                 </div>
                                 <p class="service-price mt-4">&#8369;{{ number_format($service->price, 2) }}</p>
                                 <div class="service-card-details mt-2 flex flex-wrap items-center gap-2 text-sm">
-                                    <span class="text-[var(--muted)]">{{ $service->duration ? $service->duration.' mins' : 'No fixed duration' }}</span>
+                                    <span class="text-[var(--muted)]"><svg class="service-time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2"/></svg>{{ $service->duration ? $service->duration.' mins' : 'No fixed duration' }}</span>
                                     @if($service->session_count > 1)
                                         <span class="text-[var(--soft-sandstone)]">&bull;</span>
-                                        <span class="font-semibold text-violet-700">{{ $service->session_count }} sessions</span>
+                                        <span class="font-semibold text-[var(--brand-moss)]">{{ $service->session_count }} sessions</span>
                                     @endif
                                 </div>
                                 @if($service->description)
@@ -576,7 +583,7 @@
                                    data-book-service="{{ $service->id }}"
                                    data-book-category="{{ $service->category }}"
                                    class="service-gold-link mt-auto pt-5 text-sm font-bold underline decoration-1 underline-offset-4">
-                                    <span>Book this service</span><span class="service-book-arrow" aria-hidden="true">&#8599;</span>
+                                    <svg class="service-book-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path stroke-linecap="round" d="M7 3v4M17 3v4M3 10h18M7 14h2m3 0h2m-7 3h2m3 0h2"/></svg><span>Book this service</span>
                                 </a>
                                 </div>
                             </article>
@@ -672,127 +679,26 @@
     @endif
 </section>
 
-{{-- Why Lunelle --}}
+{{-- Why Shafer's --}}
 <section id="why-lunelle" class="px-4 py-20 sm:px-6 sm:py-28">
     <div class="mx-auto max-w-6xl">
         <div class="mx-auto max-w-2xl text-center">
-            <p class="text-xs font-bold uppercase tracking-[.22em] text-[var(--desert-rock)]">Why Lunelle</p>
+            <p class="text-xs font-bold uppercase tracking-[.22em] text-[var(--desert-rock)]">Why Shafer's</p>
             <h2 class="mt-4 text-4xl leading-tight text-[var(--ink)] sm:text-5xl">The little details make the difference.</h2>
         </div>
         <div class="mt-12 grid gap-8 border-y border-[var(--desert-rock)]/20 py-8 md:grid-cols-3">
-            <div><p class="font-serif text-2xl text-[var(--ink)]">01 / Personal</p><p class="mt-3 text-sm leading-7 text-[var(--muted)]">Every appointment begins with listening, then care is tailored around what you need.</p></div>
-            <div class="md:border-x md:border-[var(--desert-rock)]/20 md:px-8"><p class="font-serif text-2xl text-[var(--ink)]">02 / Considered</p><p class="mt-3 text-sm leading-7 text-[var(--muted)]">A calm setting, thoughtful timing, and an experience designed to let you slow down.</p></div>
-            <div><p class="font-serif text-2xl text-[var(--ink)]">03 / Refined</p><p class="mt-3 text-sm leading-7 text-[var(--muted)]">From first welcome to final touch, we value beautiful results and genuine comfort.</p></div>
+            <div><p class="font-serif text-2xl text-[var(--ink)]">Personal</p><p class="mt-3 text-sm leading-7 text-[var(--muted)]">Every appointment begins with listening, then care is tailored around what you need.</p></div>
+            <div class="md:border-x md:border-[var(--desert-rock)]/20 md:px-8"><p class="font-serif text-2xl text-[var(--ink)]">Considered</p><p class="mt-3 text-sm leading-7 text-[var(--muted)]">A calm setting, thoughtful timing, and an experience designed to let you slow down.</p></div>
+            <div><p class="font-serif text-2xl text-[var(--ink)]">Refined</p><p class="mt-3 text-sm leading-7 text-[var(--muted)]">From first welcome to final touch, we value beautiful results and genuine comfort.</p></div>
         </div>
     </div>
 </section>
 
-{{-- Contact & Location --}}
-<section id="location" class="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20">
-    <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-stretch">
-
-        {{-- Contact Information --}}
-        <div class="contact-panel warm-panel rounded-2xl p-6 sm:p-8">
-            <p class="text-xs font-semibold uppercase tracking-[.22em] text-[var(--desert-rock)]">
-                Visit Us
-            </p>
-
-            <h2 class="mt-4 text-3xl font-medium tracking-tight">
-                Contact &amp; Location
-            </h2>
-
-            <p class="mt-4 text-base leading-7 text-[var(--muted)]">
-                Lunelle Aesthetics is a concept studio. Contact details and the final location will be added when the business profile is ready.
-            </p>
-
-            <div class="mt-6 space-y-4">
-
-                <div class="rounded-2xl bg-[var(--feather-white)]/70 p-4">
-                    <p class="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-                        Contact Number
-                    </p>
-
-                    <a href="#"
-                       class="mt-1 block text-xl font-medium tracking-wide text-[var(--ink)] transition-colors hover:text-[var(--desert-rock)] sm:text-2xl">
-                        Contact coming soon
-                    </a>
-                </div>
-
-                <div class="rounded-2xl bg-[var(--feather-white)]/70 p-4">
-                    <p class="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-                        Address
-                    </p>
-
-                    <div class="mt-3 flex items-start gap-3 text-[var(--ink)]">
-                        <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-[var(--creamed-oat)]/70 text-[var(--desert-rock)]" aria-hidden="true">
-                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z" />
-                                <circle cx="12" cy="10" r="2" />
-                            </svg>
-                        </span>
-                        <address class="text-base not-italic leading-7">
-                            <span class="font-medium">Location to be announced</span><br>
-                            <span class="text-[var(--muted)]">A private, appointment-led studio</span>
-                        </address>
-                    </div>
-
-                    <div class="mt-4 rounded-xl border border-[var(--desert-rock)]/20 bg-[var(--creamed-oat)]/35 px-4 py-3">
-                        <p class="text-sm leading-6 text-[var(--muted)]">
-                            Our final address, parking guidance, and opening hours will appear here before launch.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="rounded-2xl border border-[var(--desert-rock)]/25 bg-[var(--creamed-oat)]/75 p-4 sm:p-5">
-                    <p class="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">Opening Hours</p>
-                    <div class="mt-3 grid gap-1 border-b border-[var(--desert-rock)]/15 pb-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-4">
-                        <span class="text-sm font-semibold text-[var(--ink)]">Monday - Saturday</span>
-                        <strong class="service-gold-text whitespace-nowrap text-base sm:text-lg">By appointment</strong>
-                    </div>
-                    <div class="mt-3 grid gap-1 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-4">
-                        <span class="text-sm font-semibold text-[var(--ink)]">Sunday</span>
-                        <strong class="service-gold-text whitespace-nowrap text-base sm:text-lg">Closed</strong>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 grid gap-3 sm:grid-cols-2">
-
-                <a href="{{ route('login') }}"
-                   class="btn-gold rounded-xl px-4 py-3 text-center">
-                    Member Login
-                </a>
-
-                <a href="#services"
-                   class="rounded-xl border border-[var(--desert-rock)]/35 bg-[var(--feather-white)]/70 px-4 py-3 text-center font-semibold text-[var(--ink)] transition hover:bg-[var(--creamed-oat)]">
-                    Explore services
-                </a>
-
-            </div>
-        </div>
-
-        {{-- Storefront Photo --}}
-        <div class="location-visual warm-panel overflow-hidden rounded-2xl p-3">
-
-            <img
-                src="{{ asset('images/lunelle-placeholder.svg') }}"
-                alt="Lunelle Aesthetics image placeholder"
-                class="h-[360px] w-full rounded-xl object-cover sm:h-[440px] lg:h-full">
-
-            <div class="mt-4 rounded-xl bg-[var(--creamed-oat)] p-4">
-
-                <h3 class="font-semibold text-[var(--ink)]">
-                    Landmark
-                </h3>
-
-                <p class="mt-2 text-sm leading-6 text-[var(--muted)]">
-                    Lunelle is being shaped as a serene, appointment-led aesthetic studio. This area will introduce the studio once its location is confirmed.
-                </p>
-
-            </div>
-
-        </div>
-
+{{-- Contact and location --}}
+<section id="location" class="visit-section scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20">
+    <div class="visit-layout mx-auto max-w-7xl">
+        <div class="visit-copy"><p class="eyebrow">YOUR NEXT VISIT</p><h2>Take a little time <em>for yourself.</em></h2><p>Ready to plan your visit? Browse our treatments or send an appointment request. Our team will review your preferred schedule.</p><div class="visit-actions"><a href="#book" class="visit-primary">Request an appointment</a><a href="#services" class="visit-secondary">Explore treatments</a></div></div>
+        <div class="visit-details"><p class="visit-details-label">VISITING SHAFER'S</p><div><h3>Location &amp; contact</h3><p>Location and contact details will be shared here when available.</p></div><div><h3>Appointments</h3><p>Requests are reviewed by our team before they are confirmed.</p></div></div>
     </div>
 </section>
 
@@ -801,7 +707,7 @@
     <div id="bookingLayout" class="mx-auto grid min-w-0 gap-6 lg:items-start {{ session('success') ? 'max-w-3xl lg:grid-cols-1' : 'max-w-6xl lg:grid-cols-[0.8fr_1.2fr]' }}">
         <aside id="reservationInstructions" class="warm-panel min-w-0 rounded-2xl p-5 sm:p-8 {{ session('success') ? 'hidden' : '' }}">
             <p class="text-xs font-bold uppercase tracking-[.22em] text-[var(--desert-rock)]">Reservations</p>
-            <h2 class="mt-4 text-3xl">Book in a Few Easy Steps</h2>
+            <h2 class="mt-4 text-3xl">Let’s plan your visit.</h2>
             <p class="mt-4 text-sm leading-7 text-[var(--muted)]">
                 Enter your details, pick a schedule, choose services, then review before sending. Reception will confirm your appointment.
             </p>
@@ -816,7 +722,7 @@
 
         <div class="booking-form-panel min-w-0 overflow-hidden rounded-2xl p-4 sm:p-8">
 
-        <h2 id="bookingFormHeading" class="mb-2 text-center text-2xl {{ session('success') ? 'hidden' : '' }}">Book an Appointment</h2>
+        <h2 id="bookingFormHeading" class="mb-2 text-center text-2xl {{ session('success') ? 'hidden' : '' }}">Request an appointment</h2>
         <p id="bookingFormIntro" class="mb-8 text-center text-sm text-[var(--muted)] {{ session('success') ? 'hidden' : '' }}">Send your appointment request online. Reception will review and confirm the schedule.</p>
 
         {{-- Flash messages --}}
@@ -1100,12 +1006,11 @@
 
 {{-- Footer --}}
 <footer class="border-t border-[var(--desert-rock)]/20 bg-[var(--ink)] text-[var(--porcelain-mist)]">
-    <div class="hidden"></div>
-
+    <div class="landing-footer-top mx-auto max-w-7xl px-4 sm:px-6"><div><a href="#top" class="landing-footer-logo" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a><p>SKIN LOVERS LOUNGE</p></div><nav aria-label="Footer navigation"><a href="#about">Our approach</a><a href="#services">Treatments</a><a href="#gallery">Gallery</a><a href="#book">Book a visit</a></nav></div>
     <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6">
         {{-- Bottom bar --}}
         <div class="text-center text-xs leading-5 text-[var(--soft-sandstone)]">
-            <p>&copy; {{ now()->year }} Lunelle Aesthetics. All rights reserved.</p>
+            <p>&copy; {{ now()->year }} Shafer's Skin Lovers Lounge. All rights reserved.</p>
             
         </div>
     </div>
@@ -2238,3 +2143,4 @@ document.addEventListener('keydown', function (e) {
 
 </body>
 </html>
+

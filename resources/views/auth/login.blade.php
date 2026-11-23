@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="auth-heading mb-6">
-        <p class="auth-eyebrow">YOUR LUNELLE ACCOUNT</p>
+        <p class="auth-eyebrow">YOUR ACCOUNT</p>
         <h1>Lovely to see<br><em>you again.</em></h1>
         <p class="auth-intro">Sign in to view your appointments and plan your next visit.</p>
     </div>
@@ -52,5 +52,5 @@
             </x-primary-button>
         </div>
     </form>
-    <p class="auth-switch">New to Lunelle? <a href="{{ route('register') }}">Create an account &#8594;</a></p>
+    <p class="auth-switch">New to Shafer's? <a href="{{ route('register') }}">Create an account &#8594;</a></p>
 </x-guest-layout>

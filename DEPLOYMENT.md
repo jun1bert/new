@@ -123,3 +123,7 @@ If queued jobs are introduced later, use a host-supported worker or cron setup a
 - [Laravel 12 deployment requirements, public directory, caching, permissions and debug settings](https://laravel.com/docs/12.x/deployment)
 - [cPanel domain document roots and HTTPS redirects](https://docs.cpanel.net/cpanel/domains/domains/)
 - [Symfony MIME advisory and patched versions](https://symfony.com/cve-2026-45070)
+
+## Staff attendance QR
+
+Set `APP_URL` to the public HTTPS address of the deployed application and clear/rebuild the Laravel configuration cache after deployment. The owner opens **Staff attendance → Open shop QR display** on a screen kept at the shop. Staff scan the current code, sign in to their own account, and confirm time in or out. Codes change every 30 seconds; after a valid scan, that browser has five minutes to finish signing in and confirming. A successful confirmation consumes the scan. A changing code discourages reuse of old screenshots but does not prove physical presence; a live image can still be shared. Owners can correct attendance records with a reason.

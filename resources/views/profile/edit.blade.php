@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div><p class="text-xs font-bold uppercase tracking-[.2em] text-[#713b51]">YOUR ACCOUNT</p><h2 class="mt-1 font-serif text-3xl text-[#35232d]">Profile &amp; security</h2></div>
+        <div><p class="text-xs font-bold uppercase tracking-[.2em] text-[var(--brand-moss)]">YOUR ACCOUNT</p><h2 class="mt-1 font-serif text-3xl text-[var(--brand-forest)]">Profile &amp; security</h2></div>
     </x-slot>
 
     <div class="py-12">

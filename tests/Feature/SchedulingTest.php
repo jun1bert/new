@@ -12,6 +12,14 @@ use Tests\TestCase;
 
 class SchedulingTest extends TestCase
 {
+    public function test_only_administrators_can_access_working_hours_settings(): void
+    {
+        $staff = \App\Models\User::factory()->create(['user_type' => 'staff']);
+        $admin = \App\Models\User::factory()->create(['user_type' => 'administrator']);
+        $this->actingAs($staff)->get(route('admin.settings.index'))->assertForbidden();
+        $this->actingAs($admin)->get(route('admin.settings.index'))->assertOk()
+            ->assertSee('Working hours')->assertSee('Studio business hours')->assertSee($staff->name);
+    }
     use RefreshDatabase;
 
     private User $staff;
@@ -245,7 +253,7 @@ class SchedulingTest extends TestCase
         $hours[2] = null;
         DB::table('scheduling_settings')->where('id', 1)->update(['hours' => json_encode($hours)]);
         $url = route('studio.appointments.availability', ['date' => '2026-11-03', 'provider_id' => $this->staff->id, 'service_ids' => [$this->service->id]]);
-        $this->getJson($url)->assertOk()->assertJsonCount(0, 'slots')->assertJsonPath('message', 'The studio is closed on Tuesday, Nov 3. Choose another date. Administrators can update Working hours in Sessions.');
+        $this->getJson($url)->assertOk()->assertJsonCount(0, 'slots')->assertJsonPath('message', 'The studio is closed on Tuesday, Nov 3. Choose another date. Administrators can update Working hours in Settings.');
         DB::table('scheduling_settings')->where('id', 1)->update(['hours' => json_encode(array_fill(0, 7, ['open' => '09:00', 'close' => '18:00']))]);
         DB::table('staff_schedules')->insert(['user_id' => $this->staff->id, 'hours' => json_encode($hours)]);
         $this->getJson($url)->assertOk()->assertJsonCount(0, 'slots')->assertJsonPath('message', 'This staff provider is off on Tuesday, Nov 3. Choose another provider or date.');
@@ -275,3 +283,4 @@ class SchedulingTest extends TestCase
         $this->actingAs($this->client)->getJson(route('studio.appointments.availability', ['date' => '2026-11-03', 'provider_id' => $this->staff->id, 'service_ids' => [$this->service->id]]))->assertForbidden();
     }
 }
+

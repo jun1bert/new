@@ -65,7 +65,9 @@ class User extends Authenticatable
         ];
     }
 
+    public function attendances(): HasMany { return $this->hasMany(StaffAttendance::class); }
     public function appointments(): HasMany { return $this->hasMany(Appointment::class); }
     public function consentForms(): HasMany { return $this->hasMany(ConsentForm::class); }
     public function claimRequests(): HasMany { return $this->hasMany(ClientClaimRequest::class, 'claimant_id'); }
 }
+

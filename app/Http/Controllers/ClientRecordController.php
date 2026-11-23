@@ -33,8 +33,9 @@ class ClientRecordController extends Controller
 
         return view('studio.clients.show', [
             'client' => $client,
-            'appointments' => $client->appointments()->with(['service', 'services', 'staff'])->latest('scheduled_at')->get(),
+            'appointments' => $client->appointments()->with(['service', 'services', 'staff', 'skinAnalysisPhotos'])->latest('scheduled_at')->get(),
             'consentForms' => $client->consentForms()->with(['service', 'recorder'])->latest('signed_at')->get(),
         ]);
     }
 }
+
