@@ -57,14 +57,14 @@
                 </div>
             @endif
             @if($type !== 'member')
-            <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div><p class="mb-3 text-sm text-[var(--brand-text-muted)]">All appointments &middot; all time</p><section aria-label="All appointments, all time" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 @foreach ([['T', 'Total', $stats['total'], 'bg-[var(--brand-peach)] text-[var(--brand-moss)]'], ['P', 'Pending', $stats['pending'], 'bg-[#fff7e7] text-[var(--brand-orange)]'], ['S', 'Scheduled', $stats['scheduled'], 'bg-emerald-50 text-emerald-700'], ['C', 'Completed', $stats['completed'], 'bg-stone-100 text-[var(--brand-text-muted)]']] as [$letter, $label, $value, $color])
                     <article class="flex min-h-28 items-center gap-4 rounded-2xl bg-white px-5 py-5 shadow-[0_10px_28px_rgba(77,64,55,.08)] ring-1 ring-[var(--brand-moss)]/10">
                         <span class="grid size-11 shrink-0 place-items-center rounded-xl text-sm font-bold {{ $color }}">{{ $letter }}</span>
                         <div><p class="text-xs font-bold uppercase tracking-wide text-[var(--brand-moss)]">{{ $label }}</p><p class="mt-1 font-serif text-3xl font-bold text-[var(--brand-forest)]">{{ $value }}</p></div>
                     </article>
                 @endforeach
-            </section>
+            </section></div>
             @endif
 
             @if($type !== 'member')

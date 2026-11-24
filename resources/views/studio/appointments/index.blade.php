@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <x-slot name="header">
         <div>
             <p class="text-xs font-bold uppercase tracking-[.2em] text-[var(--brand-moss)]">Studio operations</p>
@@ -13,7 +13,7 @@
                 @if($services->isEmpty())
                     <div class="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[var(--brand-moss)]/20 bg-white p-5">
                         <div><h3 class="font-serif text-2xl text-[var(--brand-forest)]">Add a service to start scheduling</h3><p id="scheduling-unavailable" class="mt-2 text-sm leading-6 text-[var(--brand-text-muted)]">Walk-in and existing-client sessions need an active service with a price and session count.</p></div>
-                        @if(auth()->user()->user_type === 'administrator')
+                        @if(in_array(auth()->user()->user_type, ['owner', 'administrator'], true))
                             <a href="{{ route('admin.services.index') }}" class="rounded-lg bg-[var(--brand-moss)] px-5 py-3 text-sm font-semibold text-white">Set up services &#8594;</a>
                         @else
                             <p class="text-sm text-[var(--brand-moss)]">Ask your administrator to add or activate a service.</p>
@@ -77,7 +77,7 @@
                                     </form>
                                 </details>
                             @endif
-                            @if(!$appointment->invoice && auth()->user()->user_type === 'administrator')
+                            @if(!$appointment->invoice && in_array(auth()->user()->user_type, ['owner', 'administrator'], true))
                                 @php($legacyPayments = \App\Models\Payment::whereHas('appointment', fn ($q) => $q->where('treatment_course_id', $appointment->treatment_course_id))->whereNull('treatment_invoice_id')->get())
                                 @if($legacyPayments->isNotEmpty())
                                     <details class="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-3"><summary class="cursor-pointer font-semibold">Review existing course payments</summary>

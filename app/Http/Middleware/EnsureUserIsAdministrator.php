@@ -10,7 +10,7 @@ class EnsureUserIsAdministrator
 {
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless($request->user()?->user_type === 'administrator', 403);
+        abort_unless(in_array($request->user()?->user_type, ['owner', 'administrator'], true), 403);
 
         return $next($request);
     }

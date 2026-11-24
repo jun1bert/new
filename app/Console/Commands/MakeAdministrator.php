@@ -7,9 +7,9 @@ use Illuminate\Console\Command;
 
 class MakeAdministrator extends Command
 {
-    protected $signature = 'lunelle:make-admin {email : The email address of an existing user}';
+    protected $signature = 'shafers:make-admin {email : The email address of an existing user}';
 
-    protected $description = 'Promote an existing Lunelle user to administrator';
+    protected $description = "Promote an existing Shafer's user to administrator";
 
     public function handle(): int
     {

@@ -1,4 +1,4 @@
-# Lunelle next steps
+# Shafer's next steps
 
 The presentation refresh covers the public site, authentication, and shared member, studio, and administrator screens. Appointment requests still require studio approval.
 

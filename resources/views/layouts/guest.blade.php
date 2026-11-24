@@ -15,16 +15,18 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/css/auth.css', 'resources/js/app.js'])
     </head>
-    <body class="auth-page font-sans text-gray-900 antialiased">
+    <body class="auth-page {{ request()->routeIs('login') ? 'auth-login' : '' }} font-sans text-gray-900 antialiased">
         <header class="auth-header"><a href="{{ url('/') }}" class="auth-brand" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a><a href="{{ url('/') }}">&#8592; Back to home</a></header>
         <main class="auth-layout">
+        @unless (request()->routeIs('login'))
         <aside class="auth-story">
             <img src="{{ asset('images/spa-ritual.jpg') }}" alt="Skincare essentials, soft towels, and pink tulips" width="1200" height="800">
             <div><p class="auth-eyebrow">YOUR MOMENT OF CARE</p><h2>A little time.<br>A little <em>you.</em></h2><p>Make room for your next feel-good ritual.</p><small>BEAUTY &nbsp; / &nbsp; WELLNESS &nbsp; / &nbsp; SELF-CARE</small></div>
         </aside>
+        @endunless
         <section class="auth-form-area" aria-label="Account access">
         <div class="auth-form-content">
-            <div class="auth-card"><a href="{{ url('/') }}" class="auth-form-logo" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a>
+            <div class="auth-card">@unless (request()->routeIs('login'))<a href="{{ url('/') }}" class="auth-form-logo" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a>@endunless
                 {{ $slot }}
             </div>
         </div>

@@ -12,7 +12,7 @@ class PortalController extends Controller
     public function __invoke(Request $request): View
     {
         $user = $request->user();
-        $type = in_array($user->user_type, ['member', 'staff', 'administrator'], true)
+        $type = in_array($user->user_type, ['member', 'staff', 'owner', 'administrator'], true)
             ? $user->user_type
             : 'member';
 

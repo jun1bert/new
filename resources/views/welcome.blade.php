@@ -1,14 +1,4 @@
-﻿@php
-    // These samples keep the landing page complete until the administrator creates its first service.
-    $sampleServices = collect([
-        ['id' => 1, 'name' => 'Classic Manicure', 'category' => 'Nail Care', 'duration' => 60, 'price' => 450, 'session_count' => 1, 'requires_consent' => false, 'description' => 'Detailed cuticle care, shaping, and a polished finish.'],
-        ['id' => 2, 'name' => 'Gel Manicure', 'category' => 'Nail Care', 'duration' => 90, 'price' => 850, 'session_count' => 1, 'requires_consent' => false, 'description' => 'Long-lasting color with a glossy salon finish.'],
-        ['id' => 3, 'name' => 'Luxury Pedicure', 'category' => 'Nail Care', 'duration' => 90, 'price' => 950, 'session_count' => 1, 'requires_consent' => false, 'description' => 'A restorative foot ritual with exfoliation and massage.'],
-        ['id' => 4, 'name' => 'Signature Facial', 'category' => 'Skin Care', 'duration' => 75, 'price' => 1500, 'session_count' => 1, 'requires_consent' => true, 'description' => 'A tailored facial to refresh, hydrate, and restore your glow.'],
-        ['id' => 5, 'name' => 'Body Scrub', 'category' => 'Body Care', 'duration' => 60, 'price' => 1200, 'session_count' => 1, 'requires_consent' => true, 'description' => 'A gentle exfoliating treatment for smooth, renewed skin.'],
-        ['id' => 6, 'name' => 'Relaxation Massage', 'category' => 'Body Care', 'duration' => 60, 'price' => 1400, 'session_count' => 1, 'requires_consent' => true, 'description' => 'A calming full-body massage designed to ease tension.'],
-    ])->map(fn ($service) => (object) $service);
-
+@php
     $managedServices = \Illuminate\Support\Facades\Schema::hasTable('services')
         ? \App\Models\Service::query()
             ->where('is_active', true)
@@ -442,10 +432,10 @@
 
 {{-- Header --}}
 <header class="fixed top-0 z-50 w-full border-b border-[var(--desert-rock)]/25 bg-[var(--porcelain-mist)]/92 shadow-[0_8px_30px_rgba(77,64,55,.08)] backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-10 py-3">
+    <div class="landing-header-row max-w-7xl mx-auto flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-10 py-3">
         <a href="#top" class="landing-brand-logo" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a>
 
-        <nav class="flex items-center justify-end gap-3 sm:gap-6 text-[11px] sm:text-sm">
+        <nav class="landing-header-actions flex items-center justify-end gap-3 sm:gap-6 text-[11px] sm:text-sm" aria-label="Account and booking">
             <a href="#about" class="hidden whitespace-nowrap text-[var(--ink)] transition hover:text-[var(--desert-rock)] sm:inline">About</a>
             <a href="#services" class="hidden whitespace-nowrap text-[var(--ink)] transition hover:text-[var(--desert-rock)] sm:inline">Services</a>
             <a href="#gallery"  class="hidden whitespace-nowrap text-[var(--ink)] transition hover:text-[var(--desert-rock)] sm:inline">Gallery</a>
@@ -680,7 +670,7 @@
 </section>
 
 {{-- Why Shafer's --}}
-<section id="why-lunelle" class="px-4 py-20 sm:px-6 sm:py-28">
+<section id="why-shafers" class="px-4 py-20 sm:px-6 sm:py-28">
     <div class="mx-auto max-w-6xl">
         <div class="mx-auto max-w-2xl text-center">
             <p class="text-xs font-bold uppercase tracking-[.22em] text-[var(--desert-rock)]">Why Shafer's</p>
@@ -869,7 +859,7 @@
                 <div id="serviceCatalogContent">
                 <p class="mb-2 text-sm font-semibold text-[var(--ink)]">Tap a service to add it. Tap again to remove it.</p>
                 <div class="rounded-2xl border border-[var(--soft-sandstone)]/45 bg-white/35 p-3 sm:p-4">
-                    <div class="current-client-panel mb-3 rounded-xl border border-[var(--soft-sandstone)]/45 bg-white/90 p-3 backdrop-blur">
+                    <div id="currentClientPanel" class="current-client-panel mb-3 hidden rounded-xl border border-[var(--soft-sandstone)]/45 bg-white/90 p-3 backdrop-blur">
                         <div class="flex items-center justify-between gap-3">
                             <div>
                                 <strong id="currentParticipantTitle" class="text-sm text-[var(--ink)]">Client 1 of 1</strong>
@@ -889,9 +879,6 @@
                     </div>
                     <p id="currentClientCartEmpty" class="mt-2 text-xs text-[var(--muted)]">Your cart is empty. Tap a service below to add it.</p>
                     <div id="currentClientCartItems" class="mt-2 space-y-2"></div>
-                    <button id="cartChooseDateButton" type="button" class="mt-3 hidden w-full rounded-xl bg-[var(--desert-rock)] px-4 py-3 text-sm font-semibold text-white">
-                        Choose date and time
-                    </button>
                     <button id="applyServicesToAll" type="button" class="mt-3 hidden w-full rounded-xl border border-[var(--desert-rock)]/35 bg-white/80 px-3 py-2 text-xs font-semibold text-[var(--ink)]">
                         Apply these services to all clients
                     </button>
@@ -905,7 +892,7 @@
                         <input type="checkbox" value="{{ $service->id }}" data-price="{{ $service->price }}" data-session-count="{{ $service->session_count }}" class="service-choice-input sr-only">
                         <span class="flex items-start justify-between gap-3">
                             <span class="min-w-0"><span class="block break-words text-sm font-semibold text-[var(--ink)]">{{ $service->name }}</span>@if($service->session_count > 1)<span class="mt-1 block text-xs text-[var(--muted)]">{{ $service->session_count }} sessions · One client only</span>@endif</span>
-                            <span class="shrink-0 text-right"><span class="block text-xs font-bold text-[var(--desert-rock)] sm:text-sm">PHP {{ number_format($service->price, 2) }}</span><span class="mt-2 inline-block rounded-full bg-[var(--desert-rock)] px-2 py-1 text-[10px] font-bold text-white">+ Add</span></span>
+                            <span class="shrink-0 text-right"><span class="block text-xs font-bold text-[var(--desert-rock)] sm:text-sm">PHP {{ number_format($service->price, 2) }}</span><span class="service-choice-state mt-2 inline-block rounded-full bg-[var(--desert-rock)] px-2 py-1 text-[10px] font-bold text-white"><span class="service-state-add">+ Add</span><span class="service-state-selected">Selected ✓</span></span></span>
                         </span>
                     </label>
                     @endforeach
@@ -1238,13 +1225,11 @@ function renderCurrentClientCart() {
     const empty = document.getElementById('currentClientCartEmpty');
     if (!items || !empty) return;
     empty.classList.toggle('hidden', selectedServices.length > 0);
-    document.getElementById('cartChooseDateButton')?.classList.toggle('hidden', selectedServices.length === 0 || isGroupBooking);
     items.innerHTML = selectedServices.map(service => `<div class="flex items-center justify-between gap-3 rounded-lg bg-white/80 px-3 py-2">
         <div class="min-w-0"><p class="truncate text-xs font-semibold text-[var(--ink)]">${bookingEscape(service.name)}</p><p class="text-[11px] text-[var(--muted)]">PHP ${Number(service.price).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
         <button type="button" data-remove-cart-service="${bookingEscape(service.id)}" class="shrink-0 rounded-lg border border-red-200 px-2 py-1 text-xs font-semibold text-red-600">Remove</button>
     </div>`).join('');
-    const total = selectedServices.reduce((sum, service) => sum + Number(service.price), 0);
-    document.getElementById('currentClientCartTotal').textContent = `${selectedServices.length} item${selectedServices.length === 1 ? '' : 's'} · PHP ${total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('currentClientCartTotal').textContent = `${selectedServices.length} item${selectedServices.length === 1 ? '' : 's'}`;
     document.getElementById('applyServicesToAll')?.classList.toggle('hidden', !isGroupBooking || selectedServices.length === 0);
     renderParticipantTabs();
     items.querySelectorAll('[data-remove-cart-service]').forEach(button => button.addEventListener('click', () => {
@@ -1273,7 +1258,7 @@ function updateBookingEstimate() {
     document.getElementById('estimateServiceCount').textContent = selectedIds.length;
     document.getElementById('estimateClientCount').textContent = participantState.length;
     document.getElementById('estimateTotal').textContent = `PHP ${total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    if (window.LunelleBookingTimes) updateAvailableTimes();
+    if (window.ShafersBookingTimes) updateAvailableTimes();
 }
 
 const bookingServiceCatalog = @json($bookingServiceCatalog);
@@ -1398,6 +1383,7 @@ function updateGroupNextButtonLabel() {
 }
 
 function refreshBookingModeControls() {
+    document.getElementById('currentClientPanel')?.classList.toggle('hidden', !isGroupBooking);
     document.querySelectorAll('[data-booking-mode]').forEach(button => {
         const active = button.dataset.bookingMode === (isGroupBooking ? 'group' : 'solo');
         button.setAttribute('aria-pressed', active ? 'true' : 'false');
@@ -1484,7 +1470,7 @@ function updateAvailableTimes() {
     const date = document.getElementById('field_date').value;
     const durations = new Map(bookingServiceCatalog.map(service => [String(service.id), service.duration]));
     const duration = Math.max(0, ...participantState.map(participant => participant.service_ids.reduce((total, id) => total + (durations.get(String(id)) || 60), 0)));
-    const result = window.LunelleBookingTimes.publicRequestTimes({ date, hours: publicBookingHours, duration });
+    const result = window.ShafersBookingTimes.publicRequestTimes({ date, hours: publicBookingHours, duration });
     timeField.replaceChildren(new Option(!date ? 'Choose a date first' : (result.slots.length ? 'Select time' : 'No times available'), ''));
     result.slots.forEach(slot => timeField.add(new Option(slot.label, slot.value)));
     timeField.disabled = !result.slots.length;
@@ -1514,7 +1500,7 @@ function keepServicePickerInView() {
 
 /* Date helpers */
 function todayString() {
-    return window.LunelleBookingTimes.philippineDateTime().slice(0, 10);
+    return window.ShafersBookingTimes.philippineDateTime().slice(0, 10);
 }
 
 function formatDateFriendly(dateStr) {
@@ -1607,15 +1593,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('applyServicesToAll')?.addEventListener('click', applyCurrentServicesToAllParticipants);
-    document.getElementById('cartChooseDateButton')?.addEventListener('click', () => {
-        if (!commitCurrentParticipant()) {
-            if (!document.querySelector('#serviceChoiceGrid .service-choice-input:checked')) showCurrentClientServiceRequired();
-            return;
-        }
-        if (!validateBookingStep(2)) return;
-        goToScheduleStep();
-    });
-
     document.getElementById('participantSummaryToggle')?.addEventListener('click', () => {
         const summary = document.getElementById('participantSummary');
         const expanded = summary && !summary.classList.contains('hidden');

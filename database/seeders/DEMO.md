@@ -4,14 +4,14 @@ New demo accounts use password `DemoPortal!2026`:
 
 | Role | Email |
 | --- | --- |
-| Administrator | admin@demo.lunelle.test |
-| Staff | staff@demo.lunelle.test |
-| Client | mia@demo.lunelle.test |
-| Client with a pending past-booking claim | sofia@demo.lunelle.test |
+| Administrator | admin@demo.shafers.test |
+| Staff | staff@demo.shafers.test |
+| Client | mia@demo.shafers.test |
+| Client with a pending past-booking claim | sofia@demo.shafers.test |
 
 Look in Sessions for names starting with **Demo**:
 
-The complete seeder creates 17 demo services and 43 appointments for 14 demo clients (including the two guest profiles), plus administrator and staff accounts. Ten additional clients use `client1@demo.lunelle.test` through `client10@demo.lunelle.test` with the same demo password.
+The complete seeder creates 17 demo services and 43 appointments for 14 demo clients (including the two guest profiles), plus administrator and staff accounts. Ten additional clients use `client1@demo.shafers.test` through `client10@demo.shafers.test` with the same demo password.
 
 - Mia's three-session laser course: the first visit includes a manicure; the next two include only laser. Two visits are completed and one is scheduled.
 - Mia's facial and massage: one scheduled appointment with a combined consent form ready to sign.

@@ -8,7 +8,7 @@ import { registerAppointmentDatePicker } from './appointment-date-picker';
 import { philippineDateTime, publicRequestTimes } from './public-booking-times';
 
 window.Alpine = Alpine;
-window.LunelleBookingTimes = { philippineDateTime, publicRequestTimes };
+window.ShafersBookingTimes = { philippineDateTime, publicRequestTimes };
 registerAppointmentDatePicker(Alpine);
 
 Alpine.start();

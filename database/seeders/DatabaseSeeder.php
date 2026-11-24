@@ -15,6 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->isProduction()) {
+            throw new \RuntimeException('The default test seeder cannot run in production.');
+        }
+
         // User::factory(10)->create();
 
         User::factory()->create([

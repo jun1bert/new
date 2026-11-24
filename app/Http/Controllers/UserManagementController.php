@@ -15,9 +15,9 @@ class UserManagementController extends Controller
     {
         $search = $request->string('search')->trim()->toString();
         return view('admin.users.index', [
-            'users' => User::query()->where('user_type', '!=', 'administrator')->when($search, fn($q) => $q->where(fn($q) => $q->where('name','like',"%{$search}%")->orWhere('email','like',"%{$search}%")))->latest()->paginate(12)->withQueryString(),
+            'users' => User::query()->when($request->user()->user_type === 'owner', fn ($q) => $q->where('user_type', '!=', 'administrator'))->when($search, fn($q) => $q->where(fn($q) => $q->where('name','like',"%{$search}%")->orWhere('email','like',"%{$search}%")))->latest()->paginate(12)->withQueryString(),
             'search' => $search,
-            'roles' => ['member', 'staff', 'administrator'],
+            'roles' => $this->manageableRoles($request),
         ]);
     }
 
@@ -26,7 +26,7 @@ class UserManagementController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'user_type' => ['required', Rule::in(['member', 'staff', 'administrator'])],
+            'user_type' => ['required', Rule::in($this->manageableRoles($request))],
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
@@ -42,12 +42,13 @@ class UserManagementController extends Controller
 
     public function updateRole(Request $request, User $user): RedirectResponse
     {
+        $this->authorizeTarget($request, $user);
         $data = $request->validate([
-            'user_type' => ['required', Rule::in(['member', 'staff', 'administrator'])],
+            'user_type' => ['required', Rule::in($this->manageableRoles($request))],
         ]);
 
-        if ($user->is($request->user()) && $data['user_type'] !== 'administrator') {
-            return back()->withErrors(['user_type' => 'You cannot remove your own administrator access.']);
+        if ($user->is($request->user()) && $data['user_type'] !== $user->user_type) {
+            return back()->withErrors(['user_type' => 'You cannot change your own role.']);
         }
 
         $user->update(['user_type' => $data['user_type']]);
@@ -57,19 +58,31 @@ class UserManagementController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        $this->authorizeTarget($request, $user);
         $request->merge(['_editing_user_id' => (string) $user->id]);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user)],
-            'user_type' => ['required', Rule::in(['member', 'staff', 'administrator'])],
+            'user_type' => ['required', Rule::in($this->manageableRoles($request))],
             'is_active' => ['required', 'boolean'],
         ]);
 
-        if ($user->is($request->user()) && (! $data['is_active'] || $data['user_type'] !== 'administrator')) {
-            return back()->withErrors(['user_type' => 'You cannot deactivate yourself or remove your own administrator access.']);
+        if ($user->is($request->user()) && (! $data['is_active'] || $data['user_type'] !== $user->user_type)) {
+            return back()->withErrors(['user_type' => 'You cannot deactivate yourself or change your own role.']);
         }
 
         $user->update($data);
         return back()->with('status', "{$user->name}'s account was updated.");
+    }
+
+    private function manageableRoles(Request $request): array
+    {
+        return $request->user()->user_type === 'administrator'
+            ? ['member', 'staff', 'owner', 'administrator'] : ['member', 'staff', 'owner'];
+    }
+
+    private function authorizeTarget(Request $request, User $user): void
+    {
+        abort_if($request->user()->user_type === 'owner' && $user->user_type === 'administrator', 403);
     }
 }

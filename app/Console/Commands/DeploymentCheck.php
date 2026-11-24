@@ -38,12 +38,12 @@ class DeploymentCheck extends Command
             $pending = !$migrator->repositoryExists() || array_diff(array_keys($migrator->getMigrationFiles(database_path('migrations'))), $migrator->getRepository()->getRan());
             $check('Database migrations', !$pending, 'Back up the database, then run php artisan migrate --force.');
             $demoUsers = Schema::hasTable('users') && User::where(fn ($query) => $query->where('email', 'like', '%@demo.lunelle.test')
-                ->orWhere('email', 'like', 'guest-demo-%@booking.local')->orWhere('email', 'test@example.com'))->exists();
+                ->orWhere('email', 'like', '%@demo.shafers.test')->orWhere('email', 'like', 'guest-demo-%@booking.local')->orWhere('email', 'test@example.com'))->exists();
             $demoServices = Schema::hasTable('services') && Service::where('name', 'like', 'Demo %')->exists();
             $check('Demo records absent', !$demoUsers && !$demoServices, 'Use a clean production database with a real owner account; do not import demo records.');
-            $ownerExists = Schema::hasTable('users') && User::where('user_type', 'administrator')->where('is_active', true)
-                ->where('email', 'not like', '%@demo.lunelle.test')->where('email', '!=', 'test@example.com')->exists();
-            $check('Real owner account', $ownerExists, 'Run php artisan app:create-owner to create a real administrator.');
+            $ownerExists = Schema::hasTable('users') && User::whereIn('user_type', ['owner', 'administrator'])->where('is_active', true)
+                ->where('email', 'not like', '%@demo.lunelle.test')->where('email', 'not like', '%@demo.shafers.test')->where('email', '!=', 'test@example.com')->exists();
+            $check('Real owner account', $ownerExists, 'Run php artisan app:create-owner to create a real owner.');
         } catch (\Throwable $exception) {
             $check('Database checks', false, 'Database validation could not finish. Check the connection and migrations privately in the server logs.');
         }

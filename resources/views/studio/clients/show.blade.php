@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <x-slot name="header">
         <div>
             <a href="{{ route('studio.clients.index') }}" class="text-xs font-bold uppercase tracking-[.2em] text-[var(--brand-moss)]">← Client records</a>
@@ -11,7 +11,7 @@
         <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <section class="space-y-7">@if(session('status'))<p role="status" class="rounded-lg bg-emerald-50 p-3 text-emerald-800">{{ session('status') }}</p>@endif @if($errors->any())<div role="alert" class="rounded-lg bg-red-50 p-3 text-red-800">{{ $errors->first() }}</div>@endif
                 <div><h3 class="font-serif text-2xl text-[var(--brand-forest)]">Services availed</h3><div class="mt-4 space-y-3">@forelse($appointments as $appointment)<article class="rounded-2xl border border-[var(--brand-moss)]/20 bg-white p-5 shadow-sm"><div class="flex flex-wrap justify-between gap-3"><div><h4 class="font-semibold text-[var(--brand-forest)]">{{ $appointment->service_names }}</h4><p class="mt-1 text-sm text-[var(--brand-text-muted)]">Session {{ $appointment->session_number }} · {{ $appointment->scheduled_at->copy()->timezone('Asia/Manila')->format('M j, Y · g:i A') }}</p>@if($appointment->staff)<p class="mt-1 text-xs text-[var(--brand-text-muted)]">Recorded by {{ $appointment->staff->name }}</p>@endif</div><span class="rounded-full px-3 py-1 text-xs font-bold {{ $appointment->status === 'completed' ? 'bg-emerald-50 text-emerald-700' : 'bg-[var(--brand-cream)] text-[var(--brand-text-muted)]' }}">{{ ucfirst(str_replace('_', ' ', $appointment->status)) }}</span></div>
-@if(auth()->user()->user_type === 'administrator')
+@if(in_array(auth()->user()->user_type, ['owner', 'administrator'], true))
     <div class="mt-5 border-t border-[var(--brand-moss)]/20 pt-4">
         <h5 class="font-semibold text-[var(--brand-forest)]">Skin analyzer results <span class="font-normal text-sm">(optional)</span></h5>
         @foreach($appointment->booked_services as $service)

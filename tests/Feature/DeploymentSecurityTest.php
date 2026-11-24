@@ -156,7 +156,7 @@ class DeploymentSecurityTest extends TestCase
             ->expectsQuestion('Password (at least 12 characters)', 'UniqueOwnerPassword!2026')
             ->expectsQuestion('Confirm password', 'UniqueOwnerPassword!2026')->assertSuccessful();
         $owner = User::where('email', 'owner@studio.test')->firstOrFail();
-        $this->assertSame('administrator', $owner->user_type);
+        $this->assertSame('owner', $owner->user_type);
         $this->assertTrue(\Illuminate\Support\Facades\Hash::check('UniqueOwnerPassword!2026', $owner->password));
         $this->artisan('app:create-owner')->expectsQuestion('Owner name', 'Replacement')
             ->expectsQuestion('Owner email', 'owner@studio.test')

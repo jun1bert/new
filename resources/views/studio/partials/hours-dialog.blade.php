@@ -1,4 +1,4 @@
-        @if(auth()->user()->user_type === 'administrator')
+        @if(in_array(auth()->user()->user_type, ['owner', 'administrator'], true))
             <x-calendar-dialog name="calendar-hours" :show="$errors->any() && old('hours') !== null" focusable>
                 <section class="p-5" role="dialog" aria-modal="true" aria-labelledby="calendar-hours-title" x-data="{ target: @js((string) old('provider_id', 'studio') ?: 'studio') }">
                     <div class="flex items-center justify-between gap-3"><h3 id="calendar-hours-title" class="font-serif text-2xl text-[var(--brand-forest)]">Working hours</h3><x-modal-close x-on:click="$dispatch('close-modal', 'calendar-hours')" label="Close working hours" /></div>

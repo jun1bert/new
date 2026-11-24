@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header"><div><p class="consent-eyebrow">Client record</p><h2 class="mt-2 font-serif text-3xl">Signed consent</h2></div></x-slot>
     <div class="consent-workspace mx-auto max-w-3xl space-y-5 px-4 py-8 sm:px-6">
-        <div class="consent-actions consent-no-print"><a class="consent-link" href="{{ in_array(auth()->user()->user_type, ['staff', 'administrator'], true) ? route('studio.clients.show', $consent->client) : ($consent->appointment ? route('member.appointments.show', $consent->appointment) : route('dashboard')) }}">&larr; Back to {{ in_array(auth()->user()->user_type, ['staff', 'administrator'], true) ? 'client record' : 'appointment' }}</a><button type="button" onclick="window.print()" class="consent-secondary">Print / save PDF</button></div>
+        <div class="consent-actions consent-no-print"><a class="consent-link" href="{{ in_array(auth()->user()->user_type, ['staff', 'owner', 'administrator'], true) ? route('studio.clients.show', $consent->client) : ($consent->appointment ? route('member.appointments.show', $consent->appointment) : route('dashboard')) }}">&larr; Back to {{ in_array(auth()->user()->user_type, ['staff', 'owner', 'administrator'], true) ? 'client record' : 'appointment' }}</a><button type="button" onclick="window.print()" class="consent-secondary">Print / save PDF</button></div>
         @if(session('status'))<p role="status" class="consent-notice consent-no-print">{{ session('status') }}</p>@endif
         <article class="consent-panel">
             <p class="consent-eyebrow">Shafer's Skin Lovers Lounge · Signed record #{{ $consent->id }}</p>

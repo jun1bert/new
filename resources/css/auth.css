@@ -74,3 +74,36 @@
 .auth-brand img { display: block; width: 160px; max-width: 100%; height: auto; }
 .auth-form-logo { display: block; width: min(270px, 80%); margin: 0 auto 32px; }
 .auth-form-logo img { display: block; width: 100%; height: auto; }
+
+/* Keep the login form centered and compact on a single screen. */
+.auth-login .auth-layout { grid-template-columns: 1fr; }
+.auth-login .auth-form-area { padding: 20px 24px; }
+.auth-login .auth-form-content { margin: auto; }
+.auth-login .auth-form-logo { width: min(200px, 65%); margin-bottom: 16px; }
+.auth-login .auth-heading h1 { font-size: clamp(2.4rem, 4vw, 3.2rem); margin: 8px 0; }
+.auth-login .auth-footer { margin-top: 12px; }
+@media (max-height: 800px) {
+    .auth-login .auth-header { min-height: 64px; padding-block: 8px; }
+    .auth-login .auth-brand img { width: 120px; }
+    .auth-login .auth-layout { min-height: calc(100svh - 64px); }
+    .auth-login .auth-form-area { padding-block: 12px; }
+    .auth-login .auth-form-logo { width: 150px; margin-bottom: 8px; }
+    .auth-login .auth-heading { margin-bottom: 12px; }
+    .auth-login .auth-heading h1 { font-size: 2.4rem; }
+    .auth-login .auth-card form > div:last-child { margin-top: 8px; gap: 4px; }
+    .auth-login .auth-switch { margin-top: 8px; padding-top: 8px; }
+    .auth-login .auth-footer { margin-top: 8px; }
+}
+
+.auth-login .auth-form-content { max-width: 500px; }
+.auth-login .auth-card { background: #fffdf8; border: 1px solid var(--brand-border); border-radius: 16px; padding: clamp(24px, 3vw, 36px); box-shadow: 0 12px 40px rgba(38, 60, 50, .07); }
+.auth-login .auth-heading h1 { font-size: clamp(2.2rem, 3vw, 2.8rem); }
+.auth-login .auth-heading { margin-bottom: 16px; }
+.auth-login .auth-card form > div:last-child { margin-top: 12px; gap: 8px; }
+.auth-login .auth-switch { margin-top: 12px; padding-top: 12px; }
+@media (max-height: 800px) {
+    .auth-login .auth-card { padding: 20px 28px; }
+    .auth-login .auth-heading h1 { font-size: 2.2rem; }
+    .auth-login .auth-footer { margin-top: 8px; }
+}
+@media (max-width: 359px) { .auth-login .auth-card { padding: 20px; } }

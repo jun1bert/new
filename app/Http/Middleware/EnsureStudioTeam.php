@@ -10,7 +10,7 @@ class EnsureStudioTeam
 {
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless(in_array($request->user()?->user_type, ['staff', 'administrator'], true), 403);
+        abort_unless(in_array($request->user()?->user_type, ['staff', 'owner', 'administrator'], true), 403);
 
         return $next($request);
     }

@@ -512,3 +512,32 @@ body:has(.calendar-dialog[open]) { overflow: hidden; }
 .brand-logo-mobile { width: 130px; padding: 3px 6px; }
 .report-print-brand { display: none; }
 @media print { .report-print-brand { display: block; margin: 0 0 18px; } .report-print-brand img { width: 200px; max-width: 100%; height: auto; } }
+
+/* Let the sidebar wordmark sit directly on the dark navigation. */
+.brand-logo-sidebar { width: min(170px, 100%); padding: 4px 0; background: transparent; border-radius: 0; }
+.brand-logo-sidebar img { filter: brightness(0) saturate(100%) invert(94%) sepia(9%) saturate(403%) hue-rotate(340deg) brightness(101%); }
+
+.report-details { border: 1px solid var(--brand-border); border-radius: 1rem; background: var(--brand-white); overflow: hidden; }
+.report-details > summary { cursor: pointer; padding: 1.15rem 1.4rem; color: var(--brand-forest); font-weight: 600; }
+.report-details > summary:hover { background: var(--brand-neutral); }
+.report-details[open] > summary { border-bottom: 1px solid var(--brand-border); }
+.report-details > .report-panel { border: 0; box-shadow: none; }
+.report-details > .grid { padding: 1rem; }
+@media print { .report-details:not([open]) { display: none; } }
+
+/* Dashboard calendar readability and grouped controls. */
+.studio-calendar-dashboard .calendar-controls { justify-content: flex-start; gap: 16px; }
+.studio-calendar-dashboard .calendar-filter-form { justify-content: flex-start; }
+.studio-calendar-dashboard .calendar-heading > span, .studio-calendar-dashboard .calendar-legend,
+.studio-calendar-dashboard .calendar-hours-note, .studio-calendar-dashboard .calendar-column-header p,
+.studio-calendar-dashboard .calendar-event time, .studio-calendar-dashboard .calendar-event > span,
+.studio-calendar-dashboard .calendar-event small, .studio-calendar-dashboard .calendar-empty,
+.studio-calendar-dashboard .calendar-help { font-size: 12px; }
+.studio-calendar-dashboard .calendar-column-header h3, .studio-calendar-dashboard .calendar-event strong { font-size: 13px; }
+.studio-calendar-dashboard .calendar-hours-note a { font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Keep navigation grouped and usable on shorter screens. */
+.portal-sidebar .sidebar-navigation { scrollbar-width: thin; scrollbar-color: rgba(243, 237, 224, .35) transparent; }
+.portal-sidebar .sidebar-navigation nav > a { min-height: 42px; padding-top: 9px; padding-bottom: 9px; }
+.portal-sidebar .sidebar-group-label { margin: 20px 0 8px; padding: 0 12px; color: var(--brand-peach); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+.portal-sidebar .sidebar-account a, .portal-sidebar .sidebar-account button { padding-top: 8px; padding-bottom: 8px; }

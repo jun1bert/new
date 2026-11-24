@@ -11,7 +11,7 @@
             <section x-cloak x-show="userOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-[var(--brand-forest)]/50 p-4 backdrop-blur-sm" @keydown.escape.window="userOpen = false">
                 <div @click.outside="userOpen = false" class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
                 <div class="flex items-start justify-between gap-4"><h3 class="font-serif text-2xl text-[var(--brand-forest)]">Create an account</h3><x-modal-close @click="userOpen = false" label="Close create an account" /></div>
-                <p class="mt-2 text-sm leading-6 text-[var(--brand-text-muted)]">Create staff, member, or administrator accounts. Only administrators can manage roles.</p>
+                <p class="mt-2 text-sm leading-6 text-[var(--brand-text-muted)]">Manage member, staff, and owner accounts. Only administrators can assign the administrator role.</p>
 
                 <form method="POST" action="{{ route('admin.users.store') }}" class="mt-6 space-y-4">
                     @csrf

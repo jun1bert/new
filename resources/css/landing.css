@@ -152,12 +152,12 @@ body#top {
 #top .gallery-card h3, #top .gallery-card > div.absolute.bottom-0 p { color: var(--brand-white); text-shadow: 0 1px 4px #24151e; }
 #top footer { background: var(--brand-forest); }
 #top footer .text-center { color: #f2e3e8; }
-#top #why-lunelle { background: #f5e9ee; border-block: 1px solid #c3a2b0; }
-#top #why-lunelle h2 { color: var(--brand-forest); }
-#top #why-lunelle .grid { border: 0; gap: 22px; padding-block: 0; }
-#top #why-lunelle .grid > div { padding: 26px; border: 1px solid var(--brand-sage); border-radius: 14px; background: var(--brand-white); box-shadow: 0 8px 24px #53253b08; }
-#top #why-lunelle .grid > div > p:first-child { color: var(--brand-moss); font-weight: 600; font-size: 26px; }
-#top #why-lunelle .grid > div > p + p { color: #513e49; font-weight: 500; font-size: 14px; line-height: 1.9; }
+#top #why-shafers { background: #f5e9ee; border-block: 1px solid #c3a2b0; }
+#top #why-shafers h2 { color: var(--brand-forest); }
+#top #why-shafers .grid { border: 0; gap: 22px; padding-block: 0; }
+#top #why-shafers .grid > div { padding: 26px; border: 1px solid var(--brand-sage); border-radius: 14px; background: var(--brand-white); box-shadow: 0 8px 24px #53253b08; }
+#top #why-shafers .grid > div > p:first-child { color: var(--brand-moss); font-weight: 600; font-size: 26px; }
+#top #why-shafers .grid > div > p + p { color: #513e49; font-weight: 500; font-size: 14px; line-height: 1.9; }
 #top .location-visual { display: flex; flex-direction: column; }
 #top .location-visual > img { min-height: 0; flex: 1 1 0%; height: 400px; }
 #top .location-visual > div { flex-shrink: 0; border: 1px solid var(--brand-sage); }
@@ -171,12 +171,12 @@ body#top {
     #top header nav > a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 12px; font-size: 11px; }
     #top header nav:not(.landing-mobile-nav) > a[href="#about"], #top header nav:not(.landing-mobile-nav) > a[href="#services"],
     #top header nav:not(.landing-mobile-nav) > a[href="#gallery"], #top header nav:not(.landing-mobile-nav) > a[href="#location"] { display: none; }
-    #top #services, #top #gallery, #top #location, #top #why-lunelle { padding-block: 48px; }
-    #top #why-lunelle h2 { font-size: clamp(1.9rem, 8vw, 2.5rem); line-height: 1.2; }
-    #top #why-lunelle .grid { margin-top: 28px; gap: 16px; }
-    #top #why-lunelle .grid > div { padding: 22px; }
-    #top #why-lunelle .grid > div > p:first-child { font-size: 25px; }
-    #top #why-lunelle .grid > div > p + p { margin-top: 10px; line-height: 1.8; }
+    #top #services, #top #gallery, #top #location, #top #why-shafers { padding-block: 48px; }
+    #top #why-shafers h2 { font-size: clamp(1.9rem, 8vw, 2.5rem); line-height: 1.2; }
+    #top #why-shafers .grid { margin-top: 28px; gap: 16px; }
+    #top #why-shafers .grid > div { padding: 22px; }
+    #top #why-shafers .grid > div > p:first-child { font-size: 25px; }
+    #top #why-shafers .grid > div > p + p { margin-top: 10px; line-height: 1.8; }
     #top .service-card-heading { min-height: 94px; padding: 18px 22px; }
     #top .service-card-body { padding: 22px; }
     #top .service-luxe-card h4 { font-size: 27px; }
@@ -277,10 +277,10 @@ body#top { background: #fbfaf6; color: var(--brand-forest); font-family: 'DM San
 #top .service-book-arrow { display: none; }
 #top #gallery { background: #fbfaf6; padding-block: 90px; }
 #top .gallery-grid .gallery-card { border-radius: 12px; }
-#top #why-lunelle { background: var(--brand-cream); border: 0; padding-block: 90px; }
-#top #why-lunelle .grid > div { border: 0; border-top: 1px solid var(--brand-sage); border-radius: 0; background: transparent; box-shadow: none; padding: 24px 0; }
-#top #why-lunelle .grid > div > p:first-child { color: var(--brand-forest); font-size: 25px; }
-#top #why-lunelle .grid > div > p + p { color: var(--brand-text-muted); font-size: 15px; }
+#top #why-shafers { background: var(--brand-cream); border: 0; padding-block: 90px; }
+#top #why-shafers .grid > div { border: 0; border-top: 1px solid var(--brand-sage); border-radius: 0; background: transparent; box-shadow: none; padding: 24px 0; }
+#top #why-shafers .grid > div > p:first-child { color: var(--brand-forest); font-size: 25px; }
+#top #why-shafers .grid > div > p + p { color: var(--brand-text-muted); font-size: 15px; }
 #top .visit-section { background: var(--brand-forest); color: var(--brand-cream); padding-block: 90px; }
 .visit-layout { display: grid; grid-template-columns: 1.3fr .7fr; gap: clamp(40px, 8vw, 120px); align-items: center; }
 #top .visit-copy .eyebrow { color: var(--brand-peach); }
@@ -322,7 +322,7 @@ body#top { background: #fbfaf6; color: var(--brand-forest); font-family: 'DM San
     #top .hero-photo { height: 360px; border-radius: 180px 180px 10px 10px; }
     #top .hero-image-note { left: 0; bottom: 0; padding: 15px 18px; }
     #top .ritual-strip { gap: 8px 14px; font-size: 10px; }
-    #top #about, #top #services, #top #gallery, #top #why-lunelle, #top .visit-section, #top #book { padding-block: 64px; }
+    #top #about, #top #services, #top #gallery, #top #why-shafers, #top .visit-section, #top #book { padding-block: 64px; }
     .visit-layout { grid-template-columns: 1fr; gap: 36px; }
     .visit-details { border-left: 0; padding-left: 0; }
     .landing-footer-top { align-items: start; flex-direction: column; }
@@ -450,10 +450,10 @@ body#top { background: #fbfaf6; color: var(--brand-forest); font-family: 'DM San
 #top .gallery-grid .gallery-card { border: 7px solid #fffaf4; border-radius: 18px; box-shadow: 0 12px 30px rgb(38 60 50 / .1); }
 #top .gallery-grid .gallery-card:focus-visible { outline: 3px solid var(--brand-terracotta); outline-offset: 4px; }
 #top #galleryToggle { border-color: var(--brand-moss); color: var(--brand-forest); }
-#top #why-lunelle { position: relative; background: #fbf7ef; }
-#top #why-lunelle h2 { font-family: 'Playfair Display', Georgia, serif; }
-#top #why-lunelle .grid > div { padding: 26px 24px; border: 1px solid #d7dfd1; border-radius: 16px; background: #f0f3e9; }
-#top #why-lunelle .grid > div > p:first-child::before { content: '✦'; display: block; margin-bottom: 18px; color: var(--brand-terracotta); font-size: 19px; }
+#top #why-shafers { position: relative; background: #fbf7ef; }
+#top #why-shafers h2 { font-family: 'Playfair Display', Georgia, serif; }
+#top #why-shafers .grid > div { padding: 26px 24px; border: 1px solid #d7dfd1; border-radius: 16px; background: #f0f3e9; }
+#top #why-shafers .grid > div > p:first-child::before { content: '✦'; display: block; margin-bottom: 18px; color: var(--brand-terracotta); font-size: 19px; }
 #top .visit-section { position: relative; overflow: hidden; isolation: isolate; background: #31432f; }
 #top .visit-section::after { content: ''; position: absolute; z-index: -1; right: -110px; bottom: -220px; width: 470px; height: 470px; border: 1px solid rgb(231 233 225 / .2); border-radius: 50%; box-shadow: 0 0 0 35px rgb(231 233 225 / .04), 0 0 0 70px rgb(231 233 225 / .025); pointer-events: none; }
 #top .visit-copy h2 em { color: #edbe98; }
@@ -474,7 +474,7 @@ body#top { background: #fbfaf6; color: var(--brand-forest); font-family: 'DM San
     .about-story-visual { width: min(100%, 410px); margin-inline: auto; padding-right: 18px; }
     .about-story-visual img { height: 310px; }
     .about-story-tag { right: -4px; bottom: 42px; }
-    #top #why-lunelle .grid > div { padding: 22px; }
+    #top #why-shafers .grid > div { padding: 22px; }
     #top #gallery .gallery-grid .gallery-card { border-width: 5px; }
 }
 #top .service-card-logo { background: transparent; padding: 0; }
@@ -488,3 +488,34 @@ body#top { background: #fbfaf6; color: var(--brand-forest); font-family: 'DM San
 .landing-footer-logo { width: 135px; }
 .landing-footer-top div > p:last-child { margin-top: 4px; }
 #top footer > div:last-child { padding-top: 12px; padding-bottom: 12px; }
+
+.service-choice .service-state-selected { display: none; }
+.service-choice-input:checked + span .service-state-add { display: none; }
+.service-choice-input:checked + span .service-state-selected { display: inline; }
+.service-choice:has(.service-choice-input:checked) { border-color: var(--brand-moss); background: #eef3e9; box-shadow: 0 0 0 1px var(--brand-moss); }
+.service-choice:has(.service-choice-input:focus-visible) { outline: 2px solid var(--brand-moss); outline-offset: 3px; }
+
+@media (max-width: 639px) {
+    #top .landing-header-row { gap: 8px; padding-inline: 12px; }
+    #top .landing-brand-logo { width: clamp(90px, 29vw, 130px); max-width: none; }
+    #top .landing-header-actions { gap: 6px; }
+    #top .landing-header-actions > a { padding-inline: 10px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; }
+    #top .hero-actions { flex-direction: column; align-items: stretch; }
+    #top .hero-actions a { width: 100%; }
+    #top .hero-actions a:nth-child(2) { background: var(--brand-white); }
+}
+
+@media (max-width: 639px) {
+    #top .landing-header-row { width: 100%; box-sizing: border-box; padding-left: 16px; padding-right: 16px; }
+    #top .landing-header-actions { min-width: 0; }
+    #top .landing-header-actions > a[href="#about"],
+    #top .landing-header-actions > a[href="#services"],
+    #top .landing-header-actions > a[href="#gallery"],
+    #top .landing-header-actions > a[href="#location"] { display: none; }
+    #top .landing-header-actions > a { font-size: 12px; }
+}
+
+@media (max-width: 639px) {
+    #top .landing-header-row { padding-right: 28px; }
+    #top .landing-brand-logo { width: clamp(80px, 27vw, 120px); }
+}

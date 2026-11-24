@@ -25,7 +25,7 @@ class DemoScenarioSeederTest extends TestCase
         $this->assertDatabaseCount('consent_forms', 16);
         $this->assertDatabaseCount('client_claim_requests', 1);
         $this->assertSame('Existing client', $existing->fresh()->name);
-        $admin = User::where('email', 'admin@demo.lunelle.test')->firstOrFail();
+        $admin = User::where('email', 'admin@demo.shafers.test')->firstOrFail();
         $this->assertTrue(Hash::check(DemoScenarioSeeder::PASSWORD, $admin->password));
         $this->actingAs($admin);
         foreach (['/dashboard', '/admin/reports', '/studio/appointments', '/studio/clients', '/admin/products', '/admin/claim-requests'] as $path) {
@@ -40,7 +40,7 @@ class DemoScenarioSeederTest extends TestCase
         $this->assertCount(2, $guestAppointments);
         $this->assertEquals($guestAppointments[0]->scheduled_at, $guestAppointments[1]->scheduled_at);
         foreach ($guestAppointments as $appointment) { $this->assertCount(2, $appointment->services); }
-        $member = User::where('email', 'mia@demo.lunelle.test')->firstOrFail();
+        $member = User::where('email', 'mia@demo.shafers.test')->firstOrFail();
         $this->actingAs($member)->get('/dashboard')->assertOk()->assertSee('Demo Laser Treatment Course');
         $scheduled = $member->appointments()->where('status', 'scheduled')->where('session_number', 1)->firstOrFail();
         $this->get(route('member.consents.create', $scheduled))->assertOk()

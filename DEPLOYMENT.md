@@ -51,8 +51,8 @@ Confirm PHP **8.2 or newer**, Composer 2, MySQL/MariaDB, HTTPS, and Apache/LiteS
 Suggested layout:
 
 ```text
-/home/CPANEL_USER/lunelle/         application, .env, vendor, storage
-/home/CPANEL_USER/lunelle/public/  domain document root
+/home/CPANEL_USER/shafers/         application, .env, vendor, storage
+/home/CPANEL_USER/shafers/public/  domain document root
 ```
 
 Do not expose the repository root or move `index.php` there. If cPanel cannot point the domain at `public/`, ask the host to configure an appropriate domain/document root; do not upload the full application into a publicly browsable directory as a workaround.

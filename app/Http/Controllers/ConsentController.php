@@ -144,7 +144,7 @@ class ConsentController extends Controller
 
     public function show(Request $request, ConsentForm $consent)
     {
-        abort_unless($consent->user_id === $request->user()->id || in_array($request->user()->user_type, ['staff', 'administrator'], true), 403);
+        abort_unless($consent->user_id === $request->user()->id || in_array($request->user()->user_type, ['staff', 'owner', 'administrator'], true), 403);
 
         return view('member.consents.show', ['consent' => $consent->load(['client', 'service', 'appointment', 'recorder'])]);
     }

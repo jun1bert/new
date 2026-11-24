@@ -1,4 +1,4 @@
-﻿@php
+@php
         $calendarBookings = $appointments->mapWithKeys(function ($booking) {
             $minutes = $booking->duration_minutes ?? $booking->booked_services->sum(fn ($service) => max(1, (int) ($service->duration ?: 60)));
             return [$booking->id => [
@@ -31,7 +31,7 @@
                 </form>
             </div>
             <div class="calendar-legend"><span><i class="calendar-dot scheduled"></i>Scheduled</span><span><i class="calendar-dot pending"></i>Pending</span><span><i class="calendar-dot completed"></i>Completed</span><span><i class="calendar-dot cancelled"></i>Cancelled / no-show</span><span class="calendar-legend-help">Select an appointment for details</span></div>
-            @if($hours === null)<p class="calendar-hours-note">Business hours not set. An administrator can configure them in Settings.</p>@endif
+            @if($hours === null)<p class="calendar-hours-note">Business hours are not set. @if(in_array($type, ['owner', 'administrator'], true))<a href="{{ route('admin.settings.index') }}">Set business hours &rarr;</a>@else Ask an administrator to configure them in Settings.@endif</p>@endif
             <div class="calendar-board {{ $mode === 'week' ? 'calendar-board-week' : 'calendar-board-day' }}">
                 @foreach($days as $day)
                     @php($dayBookings = $appointments->filter(fn ($booking) => $booking->scheduled_at->copy()->timezone('Asia/Manila')->toDateString() === $day->toDateString()))

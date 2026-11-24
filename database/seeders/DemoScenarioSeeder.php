@@ -24,10 +24,10 @@ class DemoScenarioSeeder extends Seeder
             throw new \RuntimeException('Demo scenarios are disabled in production. Use a separate local or staging database.');
         }
         DB::transaction(function () {
-            $this->user('administrator', 'Demo Administrator', 'admin@demo.lunelle.test');
-            $staff = $this->user('staff', 'Demo Studio Staff', 'staff@demo.lunelle.test');
-            $mia = $this->user('member', 'Demo Mia Santos', 'mia@demo.lunelle.test');
-            $sofia = $this->user('member', 'Demo Sofia Reyes', 'sofia@demo.lunelle.test');
+            $this->user('administrator', 'Demo Administrator', 'admin@demo.shafers.test');
+            $staff = $this->user('staff', 'Demo Studio Staff', 'staff@demo.shafers.test');
+            $mia = $this->user('member', 'Demo Mia Santos', 'mia@demo.shafers.test');
+            $sofia = $this->user('member', 'Demo Sofia Reyes', 'sofia@demo.shafers.test');
             $guestA = $this->user('member', 'Demo Lara Cruz', 'guest-demo-lara@booking.local');
             $guestB = $this->user('member', 'Demo Sofia Reyes', 'guest-demo-sofia@booking.local');
 
@@ -72,10 +72,10 @@ class DemoScenarioSeeder extends Seeder
 
         $this->command?->info('Demo scenarios are ready. Existing records and previously seeded demo scenarios were preserved.');
         $this->command?->table(['Role', 'Email', 'Password for newly created demo accounts'], [
-            ['Administrator', 'admin@demo.lunelle.test', self::PASSWORD],
-            ['Staff', 'staff@demo.lunelle.test', self::PASSWORD],
-            ['Client', 'mia@demo.lunelle.test', self::PASSWORD],
-            ['Client / past booking claim', 'sofia@demo.lunelle.test', self::PASSWORD],
+            ['Administrator', 'admin@demo.shafers.test', self::PASSWORD],
+            ['Staff', 'staff@demo.shafers.test', self::PASSWORD],
+            ['Client', 'mia@demo.shafers.test', self::PASSWORD],
+            ['Client / past booking claim', 'sofia@demo.shafers.test', self::PASSWORD],
         ]);
     }
 
@@ -113,7 +113,7 @@ class DemoScenarioSeeder extends Seeder
 
         foreach ($names as $index => $name) {
             $key = 'expanded-client-'.($index + 1);
-            $client = $this->user('member', 'Demo '.$name, 'client'.($index + 1).'@demo.lunelle.test');
+            $client = $this->user('member', 'Demo '.$name, 'client'.($index + 1).'@demo.shafers.test');
             $contact = '091700001'.str_pad((string) $index, 2, '0', STR_PAD_LEFT);
             $services = $combinations[$index];
             // Spread history through the current month, without dating completed visits in the future.
