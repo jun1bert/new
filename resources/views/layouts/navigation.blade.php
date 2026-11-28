@@ -73,7 +73,7 @@
 
         <div class="sidebar-account shrink-0 border-t border-[var(--brand-moss)]/15 px-2 pt-3">
             <a href="{{ route('profile.edit') }}" @click="sidebarOpen = false" class="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-[var(--brand-neutral)]">
-                <span class="grid size-9 place-items-center rounded-full bg-[var(--brand-neutral)] text-sm font-bold text-[var(--brand-forest)]">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                @if(Auth::user()->profile_photo_path)<img src="{{ route('profile.photo') }}" alt="" class="size-9 shrink-0 rounded-full object-cover">@else<span class="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--brand-neutral)] text-sm font-bold text-[var(--brand-forest)]">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>@endif
                 <span class="min-w-0">
                     <span class="block truncate text-sm font-semibold text-[var(--brand-forest)]">{{ Auth::user()->name }}</span>
                     <span class="block text-[10px] font-bold uppercase tracking-wider text-[var(--brand-moss)]">{{ Auth::user()->user_type }}</span>

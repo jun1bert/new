@@ -541,3 +541,19 @@ body:has(.calendar-dialog[open]) { overflow: hidden; }
 .portal-sidebar .sidebar-navigation nav > a { min-height: 42px; padding-top: 9px; padding-bottom: 9px; }
 .portal-sidebar .sidebar-group-label { margin: 20px 0 8px; padding: 0 12px; color: var(--brand-peach); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
 .portal-sidebar .sidebar-account a, .portal-sidebar .sidebar-account button { padding-top: 8px; padding-bottom: 8px; }
+
+/* The member sidebar card uses a light surface. */
+.portal-care-note { color: var(--brand-forest); }
+.portal-care-note a { color: var(--brand-moss); }
+
+.member-time-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; overscroll-behavior: contain; }
+.member-time-choice { position: relative; cursor: pointer; }
+.member-time-choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.member-time-choice span { display: flex; justify-content: center; align-items: center; min-height: 42px; padding: 8px; border: 1px solid var(--brand-border); border-radius: 10px; background: #fff; color: var(--brand-forest); font-size: 12px; text-align: center; }
+.member-time-choice input:checked + span { border-color: var(--brand-moss); background: var(--brand-moss); color: white; }
+.member-time-choice input:focus-visible + span { outline: 2px solid var(--brand-moss); outline-offset: 2px; }
+.member-time-picker { position: relative; }
+.member-time-picker summary { display: flex; align-items: center; justify-content: space-between; min-height: 46px; padding: 10px 13px; border: 1px solid var(--brand-sage); border-radius: 10px; background: #fff; color: var(--brand-forest); cursor: pointer; list-style: none; font-size: 14px; }
+.member-time-picker summary::-webkit-details-marker { display: none; }
+.member-time-picker summary::after { content: '⌄'; margin-left: 12px; }
+.member-time-picker .member-time-grid { margin-top: 8px; padding: 3px; }

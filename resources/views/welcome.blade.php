@@ -428,6 +428,7 @@
 </head>
 
 <body id="top" class="relative overflow-x-hidden">
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute"><defs><clipPath id="hero-organic-mask" clipPathUnits="objectBoundingBox"><path d="M .29 0 C .25 .08 .19 .09 .15 .13 C .05 .22 0 .37 0 .52 C 0 .72 .08 .89 .29 1 L 1 1 L 1 0 Z"/></clipPath><clipPath id="hero-mobile-mask" clipPathUnits="objectBoundingBox"><path d="M .16 0 C .09 .03 .02 .1 0 .23 L 0 1 L 1 1 L 1 0 Z"/></clipPath></defs></svg>
 <a href="#services" class="skip-link">Skip to services</a>
 
 {{-- Header --}}
@@ -436,6 +437,7 @@
         <a href="#top" class="landing-brand-logo" aria-label="Shafer's Skin Lovers Lounge home"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="Shafer's Skin Lovers Lounge"></a>
 
         <nav class="landing-header-actions flex items-center justify-end gap-3 sm:gap-6 text-[11px] sm:text-sm" aria-label="Account and booking">
+            <a href="#top" class="landing-home-link" aria-current="page">Home</a>
             <a href="#about" class="hidden whitespace-nowrap text-[var(--ink)] transition hover:text-[var(--desert-rock)] sm:inline">About</a>
             <a href="#services" class="hidden whitespace-nowrap text-[var(--ink)] transition hover:text-[var(--desert-rock)] sm:inline">Services</a>
             <a href="#gallery"  class="hidden whitespace-nowrap text-[var(--ink)] transition hover:text-[var(--desert-rock)] sm:inline">Gallery</a>
@@ -445,15 +447,13 @@
             @else
                 <a href="{{ route('login') }}" class="shrink-0 whitespace-nowrap rounded-full border border-[var(--desert-rock)]/35 px-3.5 py-2 font-bold text-[var(--ink)] transition hover:bg-[var(--creamed-oat)] sm:px-4"><span class="sm:hidden">Login</span><span class="hidden sm:inline">Client login</span></a>
             @endauth
-            <a href="#book"
-               class="shrink-0 whitespace-nowrap rounded-full bg-[var(--desert-rock)] px-3.5 py-2 font-bold text-white shadow-md shadow-[#4d4037]/10 transition hover:bg-[#806752] sm:px-5">
-                <span class="sm:hidden">Book now</span><span class="hidden sm:inline">Book appointment</span>
-            </a>
         </nav>
     </div>
-    <nav class="landing-mobile-nav" aria-label="Explore Shafer's">
-        <a href="#about">About</a><a href="#services">Services</a><a href="#gallery">Gallery</a><a href="#location">Location</a>
-    </nav>
+    <details class="landing-menu"><summary aria-label="Open navigation"><span></span><span></span><span></span></summary><nav class="landing-mobile-nav" aria-label="Explore Shafer's">
+        <a href="#top">Home</a><a href="#about">About</a><a href="#services">Services</a><a href="#gallery">Gallery</a><a href="#location">Location</a>
+        @auth<a href="{{ route('dashboard') }}">My bookings</a>@else<a href="{{ route('login') }}">Client login</a>@endauth
+        <a href="#book">Book appointment</a>
+    </nav></details>
 </header>
 
 {{-- Hero --}}
@@ -466,24 +466,29 @@
     <div class="hero-layout mx-auto max-w-7xl">
         <div class="hero-copy max-w-2xl py-12 text-[var(--ink)] sm:py-16">
             <p class="text-[10px] sm:text-xs tracking-[0.28em] uppercase text-[var(--desert-rock)]">
-                SKIN LOVERS LOUNGE · YOUR MOMENT OF CARE
+                ✦ &nbsp; WHERE CARE MEETS CONFIDENCE
             </p>
             <h1 class="hero-cursive-title mt-5 text-[var(--ink)]" style="text-shadow:none;-webkit-text-stroke:0">
-                <span class="block">Feel good</span>
-                <span class="hero-cursive-tail mt-1 block">in your skin.</span>
+                <span class="hero-title-line">Your best</span><span class="hero-title-line">skin, <span class="hero-cursive-tail">every day.</span></span>
             </h1>
             <p class="mt-6 max-w-xl text-sm leading-7 text-[var(--muted)] sm:text-base">
                 Make space for yourself. Explore thoughtful skin, body, and beauty treatments, then find a time that works for you.
             </p>
 
-            <div class="hero-actions mt-8 flex flex-wrap gap-3"><a href="#book" class="rounded-full bg-[var(--ink)] px-6 py-3 text-sm font-bold text-white transition hover:bg-[var(--desert-rock)]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path stroke-linecap="round" d="M7 3v4M17 3v4M3 10h18M8 14h1m3 0h1m-5 3h1m3 0h1"/></svg>Book an appointment</a><a href="#services" class="rounded-full border border-[var(--desert-rock)]/35 bg-white/60 px-6 py-3 text-sm font-bold text-[var(--ink)] backdrop-blur transition hover:bg-white">Explore services</a></div>
+            <div class="hero-actions"><a href="#book" class="hero-primary">Book an Appointment <span aria-hidden="true">&#8594;</span></a></div>
 
+            <div class="hero-highlights" aria-label="The Shafer's experience">
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M12 2c0 6-2 8-8 10 6 0 8 2 8 10 0-8 2-10 8-10-6-2-8-4-8-10Z"/></svg><strong>Thoughtful</strong><small>Treatments</small></div>
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-7 8-7s8 2 8 7H4Z"/></svg><strong>Personal</strong><small>Care</small></div>
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M12 21 4 13C-1 8 5 2 10 6l2 2 2-2c5-4 11 2 6 7l-8 8Z"/></svg><strong>Restorative</strong><small>Moments</small></div>
+            </div>
         </div>
 
         <div class="hero-visual">
             <svg class="hero-leaves" viewBox="0 0 180 210" fill="none" aria-hidden="true"><path d="M90 203C102 142 91 75 68 26M91 143c-23-7-41-19-52-38m55 5c21-14 35-33 40-57" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M69 72C38 68 22 46 25 13c28 4 46 23 44 59ZM77 117C43 129 18 116 7 88c31-9 55 2 70 29Zm25-25c-2-32 15-57 45-64 4 28-12 51-45 64Zm-8 52c6-29 24-45 55-44-2 27-22 43-55 44Z" fill="currentColor" fill-opacity=".72"/><path d="M30 23 65 70M15 96l58 20m63-77-31 50m35 19-45 35" stroke="#c7d1b7" stroke-width="1.3" stroke-linecap="round"/></svg>
             <img src="{{ $heroImage }}" alt="An aesthetician gently applying a facial mask during a skincare treatment"
                  fetchpriority="high" width="1400" height="933" class="hero-photo">
+            <div class="hero-booking-card" id="heroBookingCard"><div class="hero-booking-copy"><span class="hero-booking-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-12 4h2m2 0h2m-6 3h2"/></svg></span><strong>Book Your Slot</strong><p>Because you deserve the best.</p><a href="#book">Choose Date &amp; Time <span aria-hidden="true">&#8594;</span></a></div><div class="hero-calendar" aria-label="Choose an appointment date"><div class="hero-calendar-heading"><button type="button" data-calendar-prev aria-label="Previous month">&#8249;</button><strong data-calendar-month></strong><button type="button" data-calendar-next aria-label="Next month">&#8250;</button></div><div class="hero-calendar-week" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div><div class="hero-calendar-days" data-calendar-days></div><small>Availability shown in booking</small></div></div>
             <div class="hero-image-note"><img class="hero-note-logo" src="{{ asset('images/branding/shafers-logo.png') }}" alt="" aria-hidden="true"><div><span class="eyebrow">A MOMENT FOR YOU</span><p>Care for the skin you're in.</p></div></div>
         </div>
     </div>
@@ -512,6 +517,7 @@
 
     @if($servicesByCategory->isNotEmpty())
         <div class="mx-auto max-w-7xl">
+            <div class="public-service-search"><label for="publicServiceSearch">Find a treatment</label><input id="publicServiceSearch" type="search" placeholder="Search services or categories" autocomplete="off"><p id="publicServiceStatus" aria-live="polite"></p></div>
             <div class="flex gap-2 overflow-x-auto pb-3" role="tablist" aria-label="Service categories">
                 @foreach($servicesByCategory as $category => $categoryServices)
                     <button type="button"
@@ -540,7 +546,7 @@
 
                     <div class="service-card-grid grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                         @foreach($categoryServices as $service)
-                            <article class="service-luxe-card warm-panel flex min-h-[230px] flex-col rounded-2xl p-6">
+                            <article class="service-luxe-card warm-panel flex min-h-[230px] flex-col rounded-2xl p-6" data-public-service data-search-text="{{ $service->name }} {{ $category }} {{ $service->description }}">
                                 <div class="service-card-heading" aria-hidden="true">
                                     <span class="service-card-category">{{ $category }}</span>
                                     <span class="service-card-logo"><img src="{{ asset('images/branding/shafers-logo.png') }}" alt="" loading="lazy"></span>
@@ -581,6 +587,7 @@
                     </div>
                 </section>
             @endforeach
+            <p id="publicServiceEmpty" class="hidden py-8 text-center text-sm text-[var(--muted)]">No services match your search. Try another term.</p>
         </div>
     @else
         <div class="mx-auto max-w-7xl py-10 text-center text-sm text-[var(--muted)]">No services available yet.</div>
@@ -598,23 +605,18 @@
     @if($galleryImages->isEmpty())
         <div class="text-center py-10 text-[var(--muted)] text-sm">No gallery images yet.</div>
     @else
-        @php
-            $visibleGalleryCount = 6;
-        @endphp
-        <div class="gallery-grid mx-auto grid max-w-7xl grid-cols-1 gap-5 {{ $galleryImages->count() === 2 ? 'md:grid-cols-2' : 'lg:grid-cols-3' }}">
+        <p class="gallery-scroll-hint">Swipe or scroll to explore the gallery</p>
+        <div class="gallery-grid mx-auto max-w-7xl" tabindex="0" role="region" aria-label="Gallery images, scroll horizontally">
             @foreach($galleryImages as $image)
                 @php
                     $galleryUrl = $image->url;
-                    $isHiddenGalleryItem = $loop->index >= $visibleGalleryCount;
                 @endphp
                 <button type="button"
-                    class="gallery-card relative overflow-hidden rounded-2xl bg-[var(--creamed-oat)] group animate-fade-up w-full text-left shadow-xl shadow-[#4d4037]/10
-                           {{ $loop->first && $galleryImages->count() > 2 ? 'lg:col-span-2 lg:row-span-2' : '' }} {{ $isHiddenGalleryItem ? 'hidden' : '' }}"
+                    class="gallery-card relative overflow-hidden rounded-2xl bg-[var(--creamed-oat)] group animate-fade-up w-full text-left shadow-xl shadow-[#4d4037]/10"
                     @if($image->exists_on_disk) onclick="openGalleryModal(this)" @endif
                     data-gallery-src="{{ $galleryUrl }}"
                     data-gallery-title="{{ $image->title ?? 'Gallery image' }}"
-                    data-gallery-caption="{{ $image->caption ?? '' }}"
-                    @if($isHiddenGalleryItem) data-gallery-extra="1" @endif>
+                    data-gallery-caption="{{ $image->caption ?? '' }}">
 
                     <div class="absolute inset-0 bg-[var(--soft-sandstone)]/35 animate-pulse"></div>
 
@@ -656,16 +658,6 @@
             @endforeach
         </div>
 
-        @if($galleryImages->count() > $visibleGalleryCount)
-            <div class="mt-8 text-center">
-                <button type="button"
-                    id="galleryToggle"
-                    data-expanded="false"
-                    class="rounded-full border border-[var(--desert-rock)]/30 bg-[var(--feather-white)] px-5 py-2.5 text-sm font-semibold text-[var(--ink)] transition hover:bg-[var(--creamed-oat)]">
-                    Show all gallery
-                </button>
-            </div>
-        @endif
     @endif
 </section>
 
@@ -745,7 +737,7 @@
             @csrf
 
             <div class="mb-6">
-                <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-semibold text-[var(--muted)] sm:text-[11px]"><span>Details</span><span>Schedule</span><span>Services</span><span>Review</span></div>
+                <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-semibold text-[var(--muted)] sm:text-[11px]"><span>Details</span><span>Services</span><span>Schedule</span><span>Review</span></div>
                 <div class="mt-2 h-2 overflow-hidden rounded-full bg-[var(--creamed-oat)]"><div id="bookingStepProgress" class="h-full w-1/4 rounded-full bg-[var(--desert-rock)] transition-all duration-300"></div></div>
                 <p id="bookingStepTitle" aria-live="polite" aria-atomic="true" class="mt-4 text-center text-sm font-semibold text-[var(--ink)]">Step 1 of 4 - Your details</p>
             </div>
@@ -842,6 +834,8 @@
                     <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" aria-hidden="true">⌕</span>
                 </div>
                 <input id="field_service_category" type="hidden" value="all">
+                <label for="bookingServiceCategory" class="sr-only">Filter services by category</label>
+                <select id="bookingServiceCategory" class="form-field w-full rounded-xl py-3"><option value="all">All categories</option>@foreach($servicesByCategory as $category => $categoryServices)<option value="{{ $category }}">{{ $category }} ({{ $categoryServices->count() }})</option>@endforeach</select>
                 </div>
                 <select id="field_service" name="service_ids[]" multiple class="hidden" aria-hidden="true">
                     @foreach($services as $service)
@@ -891,7 +885,7 @@
                     <label class="service-choice min-w-0 cursor-pointer overflow-hidden rounded-xl border border-[var(--soft-sandstone)]/55 bg-white/65 p-3 transition hover:border-[var(--desert-rock)] hover:bg-white sm:p-4" data-service-category="{{ $service->category }}" data-service-name="{{ Str::lower($service->name) }}">
                         <input type="checkbox" value="{{ $service->id }}" data-price="{{ $service->price }}" data-session-count="{{ $service->session_count }}" class="service-choice-input sr-only">
                         <span class="flex items-start justify-between gap-3">
-                            <span class="min-w-0"><span class="block break-words text-sm font-semibold text-[var(--ink)]">{{ $service->name }}</span>@if($service->session_count > 1)<span class="mt-1 block text-xs text-[var(--muted)]">{{ $service->session_count }} sessions · One client only</span>@endif</span>
+                            <span class="min-w-0"><span class="block break-words text-sm font-semibold text-[var(--ink)]">{{ $service->name }}</span><span class="mt-1 block text-xs text-[var(--muted)]">{{ $service->category }}</span>@if($service->session_count > 1)<span class="mt-1 block text-xs text-[var(--muted)]">{{ $service->session_count }} sessions · One client only</span>@endif</span>
                             <span class="shrink-0 text-right"><span class="block text-xs font-bold text-[var(--desert-rock)] sm:text-sm">PHP {{ number_format($service->price, 2) }}</span><span class="service-choice-state mt-2 inline-block rounded-full bg-[var(--desert-rock)] px-2 py-1 text-[10px] font-bold text-white"><span class="service-state-add">+ Add</span><span class="service-state-selected">Selected ✓</span></span></span>
                         </span>
                     </label>
@@ -1124,6 +1118,26 @@ if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-mot
 /* Service category browser */
 const serviceCategoryTabs = document.querySelectorAll('.service-category-tab');
 const serviceCategoryPanels = document.querySelectorAll('.service-category-panel');
+const publicServiceSearch = document.getElementById('publicServiceSearch');
+
+publicServiceSearch?.addEventListener('input', () => {
+    const terms = normalizeServiceSearch(publicServiceSearch.value).split(' ').filter(Boolean);
+    let matches = 0;
+    serviceCategoryPanels.forEach(panel => {
+        let panelMatches = 0;
+        panel.querySelectorAll('[data-public-service]').forEach(card => {
+            const text = normalizeServiceSearch(card.dataset.searchText);
+            const visible = terms.every(term => text.includes(term));
+            card.classList.toggle('hidden', !visible);
+            if (visible) { panelMatches++; matches++; }
+        });
+        if (terms.length) panel.classList.toggle('hidden', panelMatches === 0);
+    });
+    document.querySelector('[role="tablist"][aria-label="Service categories"]')?.classList.toggle('hidden', terms.length > 0);
+    document.getElementById('publicServiceEmpty')?.classList.toggle('hidden', !terms.length || matches > 0);
+    document.getElementById('publicServiceStatus').textContent = terms.length ? `${matches} matching service${matches === 1 ? '' : 's'}` : '';
+    if (!terms.length) showServiceCategory(document.querySelector('.service-category-tab[aria-selected="true"]'));
+});
 
 function showServiceCategory(tab) {
     const targetId = tab.dataset.categoryTarget;
@@ -1169,6 +1183,7 @@ document.querySelectorAll('[data-book-service]').forEach((link) => {
         if (!categoryField || !serviceField) return;
 
         categoryField.value = 'all';
+        document.getElementById('bookingServiceCategory').value = 'all';
         openServiceCatalog();
         filterClientServices('all');
         const option = Array.from(serviceField.options).find(item => item.value === link.dataset.bookService);
@@ -1191,16 +1206,18 @@ function filterClientServices(category, preserveSelection = false) {
     let visibleCount = 0;
     Array.from(serviceField.options).forEach(option => option.disabled = false);
     document.querySelectorAll('[data-service-category]').forEach(card => {
-        const selected = card.querySelector('.service-choice-input')?.checked;
         const searchableText = normalizeServiceSearch(`${card.dataset.serviceName || ''} ${card.textContent || ''}`);
         const searchTerms = query.split(' ').filter(Boolean);
         const searchMismatch = searchTerms.length && !searchTerms.every(term => searchableText.includes(term));
-        const hidden = searchMismatch;
+        const selectedCategory = document.getElementById('bookingServiceCategory')?.value || 'all';
+        const hidden = searchMismatch || (selectedCategory !== 'all' && card.dataset.serviceCategory !== selectedCategory);
         card.classList.toggle('hidden', hidden);
         if (!hidden) visibleCount++;
     });
     document.getElementById('serviceCatalogEmpty')?.classList.toggle('hidden', visibleCount > 0);
 }
+
+document.getElementById('bookingServiceCategory')?.addEventListener('change', () => filterClientServices('all'));
 
 function normalizeServiceSearch(value) {
     return String(value || '')
@@ -2085,20 +2102,6 @@ document.getElementById('galleryModal')?.addEventListener('click', function (e) 
     if (e.target === this) closeGalleryModal();
 });
 
-const galleryToggle = document.getElementById('galleryToggle');
-const galleryExtraItems = Array.from(document.querySelectorAll('[data-gallery-extra="1"]'));
-
-if (galleryToggle && galleryExtraItems.length) {
-    galleryToggle.addEventListener('click', function () {
-        const expanded = this.dataset.expanded === 'true';
-
-        galleryExtraItems.forEach((item) => item.classList.toggle('hidden', expanded));
-
-        this.dataset.expanded = String(!expanded);
-        this.textContent = expanded ? 'Show all gallery' : 'Show fewer photos';
-    });
-}
-
 /* Keyboard escape */
 document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
@@ -2118,6 +2121,48 @@ document.addEventListener('keydown', function (e) {
 });
 </script>
 
+<script>
+(() => {
+    const card = document.getElementById('heroBookingCard');
+    const days = card.querySelector('[data-calendar-days]');
+    const field = document.getElementById('field_date');
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    let month = new Date(today.getFullYear(), today.getMonth(), 1);
+    let selected = field?.value || '';
+    const localDate = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    function render() {
+        card.querySelector('[data-calendar-month]').textContent = month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+        days.replaceChildren();
+        for (let i = 0; i < month.getDay(); i++) days.append(document.createElement('span'));
+        const count = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+        for (let day = 1; day <= count; day++) {
+            const date = new Date(month.getFullYear(), month.getMonth(), day);
+            const value = localDate(date);
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = day; button.disabled = date < today;
+            button.setAttribute('aria-label', date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }));
+            button.setAttribute('aria-pressed', String(value === selected));
+            button.addEventListener('click', () => {
+                selected = value;
+                if (field) { field.value = value; field.dispatchEvent(new Event('change', { bubbles: true })); }
+                render();
+            });
+            days.append(button);
+        }
+    }
+    card.querySelector('[data-calendar-prev]').addEventListener('click', () => { month = new Date(month.getFullYear(), month.getMonth() - 1, 1); render(); });
+    card.querySelector('[data-calendar-next]').addEventListener('click', () => { month = new Date(month.getFullYear(), month.getMonth() + 1, 1); render(); });
+    field?.addEventListener('change', () => { selected = field.value; render(); });
+    const menu = document.querySelector('.landing-menu');
+    menu.addEventListener('toggle', () => {
+        document.documentElement.classList.toggle('landing-menu-open', menu.open);
+        menu.querySelector('summary').setAttribute('aria-label', menu.open ? 'Close navigation' : 'Open navigation');
+    });
+    document.querySelectorAll('.landing-mobile-nav a').forEach(link => link.addEventListener('click', () => { menu.open = false; }));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
+    render();
+})();
+</script>
 </body>
 </html>
 

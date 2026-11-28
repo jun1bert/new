@@ -10,6 +10,32 @@ class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_profile_photo_can_be_uploaded_viewed_and_removed(): void
+    {
+        \Storage::fake('local');
+        $user = User::factory()->create();
+        $photo = \Illuminate\Http\UploadedFile::fake()->createWithContent('portrait.jpg', file_get_contents(public_path('images/facial-ritual.jpg')));
+        $this->actingAs($user)->post(route('profile.photo.update'), ['photo' => $photo])->assertRedirect(route('profile.edit'));
+        $path = $user->fresh()->profile_photo_path;
+        \Storage::disk('local')->assertExists($path);
+        $this->get(route('profile.photo'))->assertOk();
+        $this->delete(route('profile.photo.destroy'))->assertRedirect();
+        \Storage::disk('local')->assertMissing($path);
+        $this->assertNull($user->fresh()->profile_photo_path);
+    }
+
+    public function test_health_profile_is_private_encrypted_and_can_be_updated(): void
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+        $this->actingAs($user)->patch(route('profile.health.update'), ['allergies' => 'Latex sensitivity', 'medications' => 'Example medicine'])->assertRedirect(route('profile.edit'));
+        $this->assertSame('Latex sensitivity', $user->fresh()->healthProfile->details['allergies']);
+        $this->assertStringNotContainsString('Latex sensitivity', \DB::table('health_profiles')->where('user_id', $user->id)->value('details'));
+        $this->actingAs($other)->get(route('profile.edit'))->assertDontSee('Latex sensitivity');
+        $this->actingAs($user)->patch(route('profile.health.update'), ['allergies' => ''])->assertRedirect();
+        $this->assertNull($user->fresh()->healthProfile->details['allergies']);
+    }
+
     public function test_profile_page_is_displayed(): void
     {
         $user = User::factory()->create();

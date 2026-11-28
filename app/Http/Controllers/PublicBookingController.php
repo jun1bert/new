@@ -15,6 +15,26 @@ use Illuminate\Validation\ValidationException;
 
 class PublicBookingController extends Controller
 {
+    public function availability(Request $request)
+    {
+        $data = $request->validate([
+            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:'.now('Asia/Manila')->toDateString()],
+            'service_ids' => ['required', 'array', 'min:1', 'max:30'],
+            'service_ids.*' => ['required', 'integer', 'distinct', \Illuminate\Validation\Rule::exists('services', 'id')->where('is_active', true)],
+        ]);
+        $services = Service::whereIn('id', $data['service_ids'])->get();
+        if (DB::table('scheduling_settings')->where('id', 1)->value('hours') === null) {
+            return response()->json(['slots' => [], 'message' => 'Shop hours are not configured yet. Please contact the studio.'])->header('Cache-Control', 'no-store');
+        }
+        $day = Carbon::parse($data['date'], 'Asia/Manila');
+        $slots = collect();
+        foreach (User::where('user_type', 'staff')->where('is_active', true)->pluck('id') as $providerId) {
+            $result = app(\App\Services\AppointmentScheduler::class)->availableTimes($day, $services, $providerId, $request->user()->id);
+            $slots = $slots->concat($result['slots']);
+        }
+        return response()->json(['slots' => $slots->unique('value')->sortBy('value')->values()])->header('Cache-Control', 'no-store');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -39,6 +59,21 @@ class PublicBookingController extends Controller
         foreach ($data['participants'] as $index => $participant) {
             if (count(array_unique($participant['service_ids'])) !== count($participant['service_ids']) || collect($participant['service_ids'])->contains(fn ($id) => !$services->has($id))) {
                 throw ValidationException::withMessages(["participants.{$index}.service_ids" => 'Select available services once per client.']);
+            }
+        }
+        if ($request->user()?->user_type === 'member' && $request->boolean('member_booking')) {
+            if (DB::table('scheduling_settings')->where('id', 1)->value('hours') === null) {
+                throw ValidationException::withMessages(['time' => 'Shop hours are not configured yet. Please contact the studio.']);
+            }
+            $day = Carbon::parse($data['date'], 'Asia/Manila');
+            foreach ($data['participants'] as $participant) {
+                $available = User::where('user_type', 'staff')->where('is_active', true)->pluck('id')->contains(function ($providerId) use ($day, $services, $participant, $request, $data) {
+                    $result = app(\App\Services\AppointmentScheduler::class)->availableTimes($day, $services->only($participant['service_ids']), $providerId, $request->user()->id);
+                    return collect($result['slots'])->contains('value', $data['time']);
+                });
+                if (! $available) {
+                    throw ValidationException::withMessages(['time' => 'That time is no longer available. Please choose another time.']);
+                }
             }
         }
         DB::transaction(function () use ($request, $data, $services, $scheduledAt) {

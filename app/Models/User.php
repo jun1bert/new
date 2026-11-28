@@ -69,5 +69,6 @@ class User extends Authenticatable
     public function appointments(): HasMany { return $this->hasMany(Appointment::class); }
     public function consentForms(): HasMany { return $this->hasMany(ConsentForm::class); }
     public function claimRequests(): HasMany { return $this->hasMany(ClientClaimRequest::class, 'claimant_id'); }
+    public function healthProfile(): \Illuminate\Database\Eloquent\Relations\HasOne { return $this->hasOne(HealthProfile::class); }
 }
 

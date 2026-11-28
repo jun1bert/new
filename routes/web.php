@@ -41,11 +41,16 @@ Route::get('/dashboard', PortalController::class)
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/member/appointment-availability', [PublicBookingController::class, 'availability'])->name('member.appointments.availability');
     Route::get('/my-appointments/{appointment}/consent', [ConsentController::class, 'create'])->name('member.consents.create');
     Route::post('/my-appointments/{appointment}/consent', [ConsentController::class, 'store'])->middleware('throttle:10,1')->name('member.consents.store');
     Route::get('/consents/{consent}', [ConsentController::class, 'show'])->name('consents.show');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/health', [ProfileController::class, 'updateHealth'])->name('profile.health.update');
+    Route::get('/profile/photo', [ProfileController::class, 'photo'])->name('profile.photo');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.photo.destroy');
     Route::get('/claim-past-appointment', [ClientClaimController::class, 'create'])->name('claims.create');
     Route::post('/claim-past-appointment', [ClientClaimController::class, 'store'])->middleware('throttle:5,1')->name('claims.store');
     Route::get('/my-appointments/{appointment}', [MemberAppointmentController::class, 'show'])->name('member.appointments.show');
